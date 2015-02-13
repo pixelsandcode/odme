@@ -1,0 +1,25 @@
+{
+  "name": "odme",
+  "version": "0.0.1",
+  "description": "ODM for any nosql storage",
+  "main": "main.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arash Kay <a.karimzadeh@gmail.com> (http://tectual.com.au/)",
+  "license": "ISC",
+  "keywords": [
+    "odm",
+    "nosql"
+  ],
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "groc": "^0.8.0",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "json-mask": "^0.3.2",
+    "lodash": "^3.2.0",
+    "shortid": "^2.1.3"
+  }
+}

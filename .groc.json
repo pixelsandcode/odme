@@ -1,0 +1,3 @@
+{
+  "glob": ["*.coffee", "README.md", "tasks/*.coffee"]
+}
