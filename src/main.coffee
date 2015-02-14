@@ -37,12 +37,18 @@ module.exports = class Model
 
   # ## Default key generator for doc
   # 
-  # Base constructor of models. generate keys if only document is passed using PREFIX and model ID generator
+  # Base constructor of models. generate keys if only document is passed using PREFIX and model ID generator.
+  # It also mask the document and only accepts properties which are allowed based on **props**. Unless you pass true as last argument
   #
   # @method
   # @public
   # 
   # @examples
+  #   new Model { prop: value }
+  #   new Model { prop: value }, true
+  #   new Model 'key', { prop: value }
+  #   new Model 'key', { prop: value }, true
+  #   
   #   user = new User { name: 'Arash' }
   #   user.key # It is like 'user_1'. based on PREFIX and _id method
   #   user.doc # The json document { name: 'Arash' }
@@ -51,16 +57,29 @@ module.exports = class Model
   #   user.key # It is same as what is passed 'u_1'
   #   user.doc # The json document { name: 'Arash' }
   # 
-  constructor: (@key, @doc) ->
+  constructor: (@key, @doc, all) ->
     @PREFIX = @constructor.name.toLowerCase() if ! @PREFIX?
     @_keys = _.keys _.pick( @props, (i) -> i )
     @setter_mask = @_keys.join ','
     @_mask = @setter_mask if ! @_mask?
-    if not doc?
-      @doc = @key || null
-      @key = @_key @_id()
+    switch arguments.length
+      when 0
+        @doc = null
+        @key = @_key @_id()
+      when 1 
+        @doc = @key || null
+        @key = @_key @_id()
+        all = false
+      when 2
+        if typeof @doc == 'boolean'
+          console.log 'yeeeeees'
+          all = @doc
+          @doc = @key || null
+          @key = @_key @_id()
+      when 3
+        all ||= false
     @key = "#{@key}" if @key?
-    @doc = JsonMask @doc, @setter_mask if @doc?
+    @doc = JsonMask @doc, @setter_mask if @doc? && ! all
 
   # ## Default key generator for doc
   # 

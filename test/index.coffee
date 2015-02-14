@@ -1,5 +1,5 @@
 should  = require('chai').should()
-Base   = require('../main')
+Base   = require('../src/main')
 User    = require('./user')
 
 describe 'Base', ->
@@ -86,6 +86,8 @@ describe 'Base', ->
   it "should alow bulk assignment for allowed attributes", ->
     user = new User { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }
     user.doc.should.eql { name: 'Arash', age: 31 }
+    user2 = new User { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }, true
+    user2.doc.should.eql { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }
 
   it "should have two independent masks as setter and getter", ->
     class Book extends Base

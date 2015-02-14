@@ -4,7 +4,7 @@
   "description": "ODM for any nosql storage",
   "main": "main.coffee",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
   },
   "author": "Arash Kay <a.karimzadeh@gmail.com> (http://tectual.com.au/)",
   "license": "ISC",
@@ -15,11 +15,23 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "groc": "^0.8.0",
+    "gulp": "^3.8.10",
+    "gulp-coffee": "^2.2.0",
+    "blanket": "^1.1.6",
+    "coveralls": "^2.11.2",
+    "mocha-lcov-reporter": "0.0.1",
     "mocha": "^2.1.0"
   },
   "dependencies": {
     "json-mask": "^0.3.2",
     "lodash": "^3.2.0",
     "shortid": "^2.1.3"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "build",
+      "data-cover-never": "node_modules",
+      "loader": "./node-loaders/coffee-script"
+    }
   }
 }

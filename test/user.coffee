@@ -1,4 +1,4 @@
-Base = require('../main')
+Base = require('../src/main')
 
 class Model extends Base
   
