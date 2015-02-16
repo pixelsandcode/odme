@@ -1,4 +1,4 @@
-Base = require('../src/main')
+Base = require('../build/main').Base
 
 class Model extends Base
   
@@ -10,5 +10,8 @@ module.exports = class User extends Model
   props: {
     name: true,
     age: true,
+    city: true,
+    country: true,
+    popularity: false,
     total_logins: false
   }

@@ -19,11 +19,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "foldPrefix": "^",
           "name": "CoffeeScript"
         },
-        "sourcePath": "/Users/arash/Projects/common_npms/odme/main.coffee",
-        "projectPath": "main.coffee",
-        "targetPath": "main",
-        "pageTitle": "main",
-        "title": "main"
+        "sourcePath": "/Users/arash/Projects/common_npms/odme/src/base.coffee",
+        "projectPath": "src/base.coffee",
+        "targetPath": "base",
+        "pageTitle": "base",
+        "title": "base"
       },
       "depth": 1,
       "outline": [
@@ -67,8 +67,110 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "slug": "mask-output"
           },
           "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Mask Class Method",
+            "slug": "mask-class-method"
+          },
+          "depth": 2
         }
       ]
+    }, {
+      "type": "file",
+      "data": {
+        "language": {
+          "nameMatchers": [".coffee", "Cakefile"],
+          "pygmentsLexer": "coffee-script",
+          "highlightJS": "coffeescript",
+          "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+          "strictMultiLineEnd": false,
+          "singleLineComment": ["#"],
+          "ignorePrefix": "}",
+          "foldPrefix": "^",
+          "name": "CoffeeScript"
+        },
+        "sourcePath": "/Users/arash/Projects/common_npms/odme/src/cb.coffee",
+        "projectPath": "src/cb.coffee",
+        "targetPath": "cb",
+        "pageTitle": "cb",
+        "title": "cb"
+      },
+      "depth": 1,
+      "outline": [
+        {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Get",
+            "slug": "get"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Find",
+            "slug": "find"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Mask or Data",
+            "slug": "mask-or-data"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Save",
+            "slug": "save"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Update",
+            "slug": "update"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Delete",
+            "slug": "delete"
+          },
+          "depth": 2
+        }
+      ]
+    }, {
+      "type": "file",
+      "data": {
+        "language": {
+          "nameMatchers": [".coffee", "Cakefile"],
+          "pygmentsLexer": "coffee-script",
+          "highlightJS": "coffeescript",
+          "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+          "strictMultiLineEnd": false,
+          "singleLineComment": ["#"],
+          "ignorePrefix": "}",
+          "foldPrefix": "^",
+          "name": "CoffeeScript"
+        },
+        "sourcePath": "/Users/arash/Projects/common_npms/odme/src/main.coffee",
+        "projectPath": "src/main.coffee",
+        "targetPath": "main",
+        "pageTitle": "main",
+        "title": "main"
+      },
+      "depth": 1,
+      "outline": []
     }
   ];
 
