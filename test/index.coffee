@@ -148,7 +148,7 @@ describe 'Puffer', ->
     recipe2.doc.popularity = 100
     recipe2.save(true).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100, maximum_likes: 100 }
     ).done()
 
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
@@ -173,7 +173,7 @@ describe 'Puffer', ->
         updater = new Recipe recipe.key, { name: 'Pasta Bolognese' }
         updater.update(true).then(
           (u) ->
-            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe.key, doc_type: 'recipe' }
+            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe.key, doc_type: 'recipe', maximum_likes: 100 }
         )
     ).done()
 
@@ -199,7 +199,7 @@ describe 'Puffer', ->
           d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key }
         ).done()
         Recipe.get(recipe.key, true).then(
-          (d) -> d.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100 } 
+          (d) -> d.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100, maximum_likes: 100 } 
         ).done()
     )
 
@@ -241,5 +241,9 @@ describe 'Puffer', ->
         Recipe.find([recipe.key, recipe2.key], true).then( (d) -> 
           d.should.be.an.instanceof Array
           Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe' }
+        ).done()
+        Recipe.find([recipe.key, recipe2.key], false, true).then( (d) -> 
+          d.should.be.an.instanceof Object
+          d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
         ).done()
     )

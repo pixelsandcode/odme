@@ -14,3 +14,7 @@ module.exports = class Recipe extends Base
     popularity: false,
     time: true
   }
+
+  constructor: (key, doc, all)->
+    super
+    @doc.maximum_likes = 100

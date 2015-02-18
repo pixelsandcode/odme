@@ -32,24 +32,38 @@
       });
     };
 
-    CB.find = function(key, raw) {
+    CB.find = function(key, raw, as_object) {
       var _this;
       _this = this;
       return this.prototype.source.get(key, true).then(function(d) {
-        var i, list, mask, _i, _len;
+        var i, list, mask, o, _i, _j, _len, _len1;
         if (d.isBoom || raw) {
           return d;
         }
         mask = _this.prototype._mask || null;
         if (!(d instanceof Array)) {
-          return _this.mask(d, mask);
+          if ((as_object != null) && as_object) {
+            (o = {})[d.doc_key] = _this.mask(d, mask);
+            return o;
+          } else {
+            return _this.mask(d, mask);
+          }
+        } else {
+          if ((as_object != null) && as_object) {
+            list = {};
+            for (_i = 0, _len = d.length; _i < _len; _i++) {
+              i = d[_i];
+              list[i.doc_key] = _this.mask(i, mask);
+            }
+          } else {
+            list = [];
+            for (_j = 0, _len1 = d.length; _j < _len1; _j++) {
+              i = d[_j];
+              list.push(_this.mask(i, mask));
+            }
+          }
+          return list;
         }
-        list = [];
-        for (_i = 0, _len = d.length; _i < _len; _i++) {
-          i = d[_i];
-          list.push(_this.mask(i, mask));
-        }
-        return list;
       });
     };
 

@@ -10,7 +10,7 @@ module.exports = class CB extends Base
   # 
   # Get the existing doc by key. It can return raw document (only value part) or instantiate from the javascript class
   # 
-  # @method get(key, [raw])
+  # @method get(key[, raw])
   # @public
   # 
   # @param {string}  key(s)  document key(s) which should be retrieved
@@ -33,31 +33,43 @@ module.exports = class CB extends Base
   # 
   # Find the existing docs by keys. It can return raw document (only value part) or the masked version of document. It uses **_mask** if it is defined in the class level as default filter.
   # 
-  # @method find(key, [raw])
+  # @method find(key[, raw[, as_object]])
   # @public
   # 
-  # @param {string}  key(s)  document key(s) which should be retrieved
-  # @param {boolean} raw  if it should return raw document 
+  # @param {string}  key(s)     document key(s) which should be retrieved
+  # @param {boolean} raw        if it should return raw document 
+  # @param {boolean} as_object  if it's set to true it will return the masked result as object.
   # 
   # @example
   #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
   # 
-  @find: (key, raw)->
+  @find: (key, raw, as_object)->
     _this = @
     @::source.get(key, true).then (d)->
       return d if d.isBoom || raw
       mask = (_this::_mask||null)
-      return _this.mask d, mask if d not instanceof Array
-      list = []
-      for i in d
-        list.push _this.mask i, mask 
-      list
+      if d not instanceof Array
+        if as_object? and as_object
+          (o = {})[d.doc_key] = _this.mask d, mask
+          return o
+        else
+          return _this.mask d, mask
+      else
+        if as_object? and as_object
+          list = {}
+          for i in d
+            list[i.doc_key] = _this.mask i, mask
+        else
+          list = []
+          for i in d
+            list.push _this.mask i, mask 
+        list
 
   # ## Mask or Data
   # 
   # Check the CB callback's result and if it is alright and masked version is requested, it will return the masked result. 
   # 
-  # @method _mask_or_data(data, [mask])
+  # @method _mask_or_data(data[, mask])
   # @private
   # 
   # @param {string|array|true}           mask  this works exactly same way mask(mask) method works
@@ -97,7 +109,7 @@ module.exports = class CB extends Base
   # 
   # @example
   #   recipe = new Recipe "recipe_xhygd12gH3", { name: 'Anti Pasta' }
-  #   recipe.save(true).then (d) -> console.log d
+  #   recipe.update(true).then (d) -> console.log d
   # 
   update: (mask)->
     _this = @
