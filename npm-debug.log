@@ -1,0 +1,118 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.33
+4 verbose publish [ '.' ]
+5 verbose cache add [ '.', null ]
+6 verbose cache add name=undefined spec="." args=[".",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: '.',
+7 verbose parsed url   path: '.',
+7 verbose parsed url   href: '.' }
+8 silly lockFile 3a52ce78- .
+9 verbose lock . /Users/arash/.npm/3a52ce78-.lock
+10 verbose tar pack [ '/Users/arash/.npm/odme/0.0.5/package.tgz', '.' ]
+11 verbose tarball /Users/arash/.npm/odme/0.0.5/package.tgz
+12 verbose folder .
+13 info prepublish odme@0.0.5
+14 silly lockFile 1f1177db-tar tar://.
+15 verbose lock tar://. /Users/arash/.npm/1f1177db-tar.lock
+16 silly lockFile 2fadb326-arash-npm-odme-0-0-5-package-tgz tar:///Users/arash/.npm/odme/0.0.5/package.tgz
+17 verbose lock tar:///Users/arash/.npm/odme/0.0.5/package.tgz /Users/arash/.npm/2fadb326-arash-npm-odme-0-0-5-package-tgz.lock
+18 silly lockFile 1f1177db-tar tar://.
+19 silly lockFile 1f1177db-tar tar://.
+20 silly lockFile 2fadb326-arash-npm-odme-0-0-5-package-tgz tar:///Users/arash/.npm/odme/0.0.5/package.tgz
+21 silly lockFile 2fadb326-arash-npm-odme-0-0-5-package-tgz tar:///Users/arash/.npm/odme/0.0.5/package.tgz
+22 silly lockFile 04efdff6-ers-arash-npm-odme-0-0-5-package /Users/arash/.npm/odme/0.0.5/package
+23 verbose lock /Users/arash/.npm/odme/0.0.5/package /Users/arash/.npm/04efdff6-ers-arash-npm-odme-0-0-5-package.lock
+24 silly lockFile 04efdff6-ers-arash-npm-odme-0-0-5-package /Users/arash/.npm/odme/0.0.5/package
+25 silly lockFile 04efdff6-ers-arash-npm-odme-0-0-5-package /Users/arash/.npm/odme/0.0.5/package
+26 silly lockFile 3a52ce78- .
+27 silly lockFile 3a52ce78- .
+28 silly publish { name: 'odme',
+28 silly publish   version: '0.0.5',
+28 silly publish   description: 'Not a real ODM but will ease dealing with any nosql storage',
+28 silly publish   main: 'build/main',
+28 silly publish   scripts: { test: 'mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js' },
+28 silly publish   author:
+28 silly publish    { name: 'Arash Kay',
+28 silly publish      email: 'a.karimzadeh@gmail.com',
+28 silly publish      url: 'http://tectual.com.au/' },
+28 silly publish   license: 'ISC',
+28 silly publish   keywords: [ 'odm', 'nosql' ],
+28 silly publish   devDependencies:
+28 silly publish    { blanket: '^1.1.6',
+28 silly publish      chai: '^1.10.0',
+28 silly publish      'coffee-script': '^1.9.0',
+28 silly publish      coveralls: '^2.11.2',
+28 silly publish      groc: '^0.8.0',
+28 silly publish      gulp: '^3.8.10',
+28 silly publish      'gulp-coffee': '^2.2.0',
+28 silly publish      mocha: '^2.1.0',
+28 silly publish      'mocha-lcov-reporter': '0.0.1',
+28 silly publish      puffer: '^0.2.2' },
+28 silly publish   dependencies: { 'json-mask': '^0.3.2', lodash: '^3.2.0', shortid: '^2.1.3' },
+28 silly publish   config:
+28 silly publish    { blanket:
+28 silly publish       { pattern: 'build',
+28 silly publish         'data-cover-never': 'node_modules',
+28 silly publish         loader: './node-loaders/coffee-script' } },
+28 silly publish   gitHead: '30583d05ee1fb2ad545b53aa75b688a0d26c2c3f',
+28 silly publish   readme: 'ERROR: No README data found!',
+28 silly publish   _id: 'odme@0.0.5',
+28 silly publish   _shasum: '053b744cacf1d9623b0800821cc6380c50620c44',
+28 silly publish   _from: '.' }
+29 verbose request where is /odme
+30 verbose request registry https://registry.npmjs.org/
+31 verbose request id 0da548c79250161f
+32 verbose url raw /odme
+33 verbose url resolving [ 'https://registry.npmjs.org/', './odme' ]
+34 verbose url resolved https://registry.npmjs.org/odme
+35 verbose request where is https://registry.npmjs.org/odme
+36 info trying registry request attempt 1 at 10:51:58
+37 http PUT https://registry.npmjs.org/odme
+38 http 403 https://registry.npmjs.org/odme
+39 verbose headers { date: 'Mon, 16 Feb 2015 23:51:59 GMT',
+39 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+39 verbose headers   'content-type': 'application/json',
+39 verbose headers   'cache-control': 'max-age=60',
+39 verbose headers   'content-length': '2975',
+39 verbose headers   'accept-ranges': 'bytes',
+39 verbose headers   via: '1.1 varnish',
+39 verbose headers   'x-served-by': 'cache-syd1621-SYD',
+39 verbose headers   'x-cache': 'MISS',
+39 verbose headers   'x-cache-hits': '0',
+39 verbose headers   'x-timer': 'S1424130719.115576,VS0,VE195',
+39 verbose headers   'keep-alive': 'timeout=10, max=50',
+39 verbose headers   connection: 'Keep-Alive' }
+40 error publish Failed PUT 403
+41 error Error: forbidden cannot modify pre-existing version: 0.0.5
+41 error old={"name":"odme","version":"0.0.5","description":"Not a real ODM but will ease dealing with any nosql storage","main":"build/main","scripts":{"test":"mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"},"author":{"name":"Arash Kay","email":"a.karimzadeh@gmail.com","url":"http://tectual.com.au/"},"license":"ISC","keywords":["odm","nosql"],"devDependencies":{"blanket":"^1.1.6","chai":"^1.10.0","coffee-script":"^1.9.0","coveralls":"^2.11.2","groc":"^0.8.0","gulp":"^3.8.10","gulp-coffee":"^2.2.0","mocha":"^2.1.0","mocha-lcov-reporter":"0.0.1","puffer":"^0.2.2"},"dependencies":{"json-mask":"^0.3.2","lodash":"^3.2.0","shortid":"^2.1.3"},"config":{"blanket":{"pattern":"build","data-cover-never":"node_modules","loader":"./node-loaders/coffee-script"}},"gitHead":"4f4ae4d55a612a24a98baafb736a2f9578786780","_id":"odme@0.0.5","_shasum":"695ea26cf9baaf92d95c1d05c39d5e1fd6710d31","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"tectual","email":"a.karimzadeh@gmail.com"},"maintainers":[{"name":"tectual","email":"a.karimzadeh@gmail.com"}],"dist":{"shasum":"695ea26cf9baaf92d95c1d05c39d5e1fd6710d31","tarball":"http://registry.npmjs.org/odme/-/odme-0.0.5.tgz"}}
+41 error new={"name":"odme","version":"0.0.5","description":"Not a real ODM but will ease dealing with any nosql storage","main":"build/main","scripts":{"test":"mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"},"author":{"name":"Arash Kay","email":"a.karimzadeh@gmail.com","url":"http://tectual.com.au/"},"license":"ISC","keywords":["odm","nosql"],"devDependencies":{"blanket":"^1.1.6","chai":"^1.10.0","coffee-script":"^1.9.0","coveralls":"^2.11.2","groc":"^0.8.0","gulp":"^3.8.10","gulp-coffee":"^2.2.0","mocha":"^2.1.0","mocha-lcov-reporter":"0.0.1","puffer":"^0.2.2"},"dependencies":{"json-mask":"^0.3.2","lodash":"^3.2.0","shortid":"^2.1.3"},"config":{"blanket":{"pattern":"build","data-cover-never":"node_modules","loader":"./node-loaders/coffee-script"}},"gitHead":"30583d05ee1fb2ad545b53aa75b688a0d26c2c3f","readme":"ERROR: No README data found!","_id":"odme@0.0.5","_shasum":"053b744cacf1d9623b0800821cc6380c50620c44","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"tectual","email":"a.karimzadeh@gmail.com"},"maintainers":[{"name":"tectual","email":"a.karimzadeh@gmail.com"}],"dist":{"shasum":"053b744cacf1d9623b0800821cc6380c50620c44","tarball":"http://registry.npmjs.org/odme/-/odme-0.0.5.tgz"}}: odme
+41 error     at RegClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:308:14)
+41 error     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:246:65)
+41 error     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:236:22)
+41 error     at Request.emit (events.js:98:17)
+41 error     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1142:14)
+41 error     at Request.emit (events.js:117:20)
+41 error     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1096:12)
+41 error     at IncomingMessage.emit (events.js:117:20)
+41 error     at _stream_readable.js:943:16
+41 error     at process._tickCallback (node.js:419:13)
+42 error If you need help, you may report this *entire* log,
+42 error including the npm and node versions, at:
+42 error     <http://github.com/npm/npm/issues>
+43 error System Darwin 13.4.0
+44 error command "node" "/usr/local/bin/npm" "publish"
+45 error cwd /Users/arash/Projects/common_npms/odme
+46 error node -v v0.10.33
+47 error npm -v 1.4.28
+48 verbose exit [ 1, true ]
