@@ -37,10 +37,13 @@
       _this = this;
       return this.prototype.source.get(key, true).then(function(d) {
         var i, list, mask, o, _i, _j, _len, _len1;
-        if (d.isBoom || raw) {
+        if (d.isBoom || ((raw != null) && raw === true)) {
           return d;
         }
         mask = _this.prototype._mask || null;
+        if (typeof raw === 'string') {
+          mask = raw;
+        }
         if (!(d instanceof Array)) {
           if ((as_object != null) && as_object) {
             (o = {})[d.doc_key] = _this.mask(d, mask);

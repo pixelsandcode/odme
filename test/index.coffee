@@ -246,4 +246,8 @@ describe 'Puffer', ->
           d.should.be.an.instanceof Object
           d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
         ).done()
+        Recipe.find([recipe.key, recipe2.key], 'name,popularity', true).then( (d) -> 
+          d.should.be.an.instanceof Object
+          d[recipe.key].should.eql { name: 'Pasta', popularity: 100 }
+        ).done()
     )

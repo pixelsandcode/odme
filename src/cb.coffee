@@ -37,7 +37,7 @@ module.exports = class CB extends Base
   # @public
   # 
   # @param {string}  key(s)     document key(s) which should be retrieved
-  # @param {boolean} raw        if it should return raw document 
+  # @param {boolean|string} raw        if it's true it returns raw document, if it is string it will be considered as a mask
   # @param {boolean} as_object  if it's set to true it will return the masked result as object.
   # 
   # @example
@@ -46,8 +46,9 @@ module.exports = class CB extends Base
   @find: (key, raw, as_object)->
     _this = @
     @::source.get(key, true).then (d)->
-      return d if d.isBoom || raw
+      return d if d.isBoom || (raw? && raw == true)
       mask = (_this::_mask||null)
+      mask = raw if typeof raw == 'string'
       if d not instanceof Array
         if as_object? and as_object
           (o = {})[d.doc_key] = _this.mask d, mask
