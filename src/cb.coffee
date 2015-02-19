@@ -1,4 +1,5 @@
-Base = require('./base')
+Base = require './base'
+Boom = require 'boom'
 
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
 # 
@@ -97,7 +98,16 @@ module.exports = class CB extends Base
   # 
   save: (mask)->
     _this = @
-    @source.create(@key, @doc).then (d) -> _this._mask_or_data(d, mask)
+    @Q.invoke( @, 'before_create' ).then(
+      (passed) ->
+        if passed
+          _this.source.create(_this.key, _this.doc).then( 
+            (d) -> _this._mask_or_data(d, mask)
+          ).then _this.after_save
+        else
+          Boom.notAcceptable "Validation failed"
+    )
+
 
   # ## Update
   # 
@@ -114,11 +124,13 @@ module.exports = class CB extends Base
   # 
   update: (mask)->
     _this = @
-    @source.update(@key, @doc).then (data) -> 
-      return data if data.isBoom || ! mask?
-      _this.source.get(_this.key, true).then (d) ->
-        _this.doc = d
-        _this._mask_or_data(d, mask)
+    @source.update(@key, @doc).then( 
+      (data) -> 
+        return data if data.isBoom || ! mask?
+        _this.source.get(_this.key, true).then (d) ->
+          _this.doc = d
+          _this._mask_or_data(d, mask)
+    ).then @after_save
 
   # ## Delete
   # 
@@ -136,3 +148,15 @@ module.exports = class CB extends Base
     @::source.remove(key).then (d)->
       return d if d.isBoom
       return true
+  
+  # ## After Save Callback
+  # 
+  # You can after save callback in your models. If you want the data being passed in promises chain after calling **after_save** make sure you are returning it
+  # 
+  after_save: (data) -> return data
+  
+  # ## Before create Callback
+  # 
+  # Before Create hook to assign values or be used as validation. It should return true or false to determine if doc will get saved.
+  # 
+  before_create: -> return true

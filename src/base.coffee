@@ -3,7 +3,7 @@ JsonMask = require 'json-mask'
 _ = require 'lodash'
 
 module.exports = class Model
-
+  
   # ## Source Adapter
   # 
   # Using this you can tap your models to any storage adapter and all of your models will inherit same adapter
@@ -34,7 +34,7 @@ module.exports = class Model
   doc_type: null
   props: []
   _mask: null
-
+  Q: require 'q'
 
   # ## Default key generator for doc
   # 

@@ -18,3 +18,10 @@ module.exports = class Recipe extends Base
   constructor: (key, doc, all)->
     super
     @doc.maximum_likes = 100
+
+  before_create: ->
+    !(@doc.views? && @doc.views>1000)
+
+  after_save: (data) ->
+    data.hits = 0
+    data

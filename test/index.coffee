@@ -148,14 +148,14 @@ describe 'Puffer', ->
     recipe2.doc.popularity = 100
     recipe2.save(true).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100, maximum_likes: 100 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100, maximum_likes: 100, hits: 0 }
     ).done()
 
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
     recipe.save('name').then(
       (d) ->
-        d.should.eql { name: 'Pasta' }
+        d.should.eql { name: 'Pasta', hits: 0 }
     ).done()
 
   it "should update a doc & return masked doc or db's result", ->
@@ -164,7 +164,7 @@ describe 'Puffer', ->
 
     recipe.save([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 0 }
         updater = new Recipe recipe.key, { name: 'Anti Pasta' }
         updater.update([]).then(
           (u) ->
@@ -173,7 +173,7 @@ describe 'Puffer', ->
         updater = new Recipe recipe.key, { name: 'Pasta Bolognese' }
         updater.update(true).then(
           (u) ->
-            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe.key, doc_type: 'recipe', maximum_likes: 100 }
+            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe.key, doc_type: 'recipe', maximum_likes: 100, hits: 0 }
         )
     ).done()
 
@@ -183,7 +183,7 @@ describe 'Puffer', ->
 
     recipe.save([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 0 }
         Recipe.remove(recipe.key).then (d) -> d.should.equal true
     )
 
@@ -193,7 +193,7 @@ describe 'Puffer', ->
 
     recipe.save([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 0 }
         Recipe.get(recipe.key).then( (d) -> 
           d.should.be.an.instanceof Recipe
           d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key }
@@ -251,3 +251,10 @@ describe 'Puffer', ->
           d[recipe.key].should.eql { name: 'Pasta', popularity: 100 }
         ).done()
     )
+
+  it "should fail on before_create returning false", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.doc.views = 10000
+    recipe.save().then (d) ->
+      d.should.be.an.instanceof Error
+

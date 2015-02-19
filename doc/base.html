@@ -2,7 +2,8 @@
 JsonMask = <span class="hljs-built_in">require</span> <span class="hljs-string">'json-mask'</span>
 _ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
 
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Model</span></span></div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><h2 id="source-adapter">Source Adapter</h2>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Model</span></span>
+  </div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><h2 id="source-adapter">Source Adapter</h2>
 <p>Using this you can tap your models to any storage adapter and all of your models will inherit same adapter</p>
 <p>Example:</p>
 <pre><code>Model::source = CB
@@ -27,7 +28,8 @@ Model::source   # it is CB</code></pre></div></div><div class="code"><div class=
   <span class="hljs-attribute">PREFIX</span>: <span class="hljs-literal">null</span>
   <span class="hljs-attribute">doc_type</span>: <span class="hljs-literal">null</span>
   <span class="hljs-attribute">props</span>: []
-  <span class="hljs-attribute">_mask</span>: <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method constructor([@key], @doc, [all])</span></p>
+  <span class="hljs-attribute">_mask</span>: <span class="hljs-literal">null</span>
+  <span class="hljs-attribute">Q</span>: <span class="hljs-built_in">require</span> <span class="hljs-string">'q'</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method constructor([@key], @doc, [all])</span></p>
 <h2 id="default-key-generator-for-doc">Default key generator for doc</h2>
 <p>Base constructor of models. It generates a key if only document is passed, by using PREFIX and model ID generator. doc_key and doc_type will always be added to document properties.
 It also mask the document and only accepts properties which are allowed based on <strong>props</strong>. Unless you pass true as last argument</p>

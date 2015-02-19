@@ -1,9 +1,11 @@
 (function() {
-  var Base, CB,
+  var Base, Boom, CB,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __hasProp = {}.hasOwnProperty;
 
   Base = require('./base');
+
+  Boom = require('boom');
 
   module.exports = CB = (function(_super) {
     __extends(CB, _super);
@@ -81,8 +83,14 @@
     CB.prototype.save = function(mask) {
       var _this;
       _this = this;
-      return this.source.create(this.key, this.doc).then(function(d) {
-        return _this._mask_or_data(d, mask);
+      return this.Q.invoke(this, 'before_create').then(function(passed) {
+        if (passed) {
+          return _this.source.create(_this.key, _this.doc).then(function(d) {
+            return _this._mask_or_data(d, mask);
+          }).then(_this.after_save);
+        } else {
+          return Boom.notAcceptable("Validation failed");
+        }
       });
     };
 
@@ -97,7 +105,7 @@
           _this.doc = d;
           return _this._mask_or_data(d, mask);
         });
-      });
+      }).then(this.after_save);
     };
 
     CB.remove = function(key) {
@@ -107,6 +115,14 @@
         }
         return true;
       });
+    };
+
+    CB.prototype.after_save = function(data) {
+      return data;
+    };
+
+    CB.prototype.before_create = function() {
+      return true;
     };
 
     return CB;

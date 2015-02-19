@@ -18,6 +18,8 @@
 
     Model.prototype._mask = null;
 
+    Model.prototype.Q = require('q');
+
     function Model(_at_key, _at_doc, all) {
       this.key = _at_key;
       this.doc = _at_doc;
