@@ -23,5 +23,5 @@ module.exports = class Recipe extends Base
     !(@doc.views? && @doc.views>1000)
 
   after_save: (data) ->
-    data.hits = 0
+    @doc.hits = 0
     data
