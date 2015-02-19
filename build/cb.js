@@ -87,7 +87,9 @@
         if (passed) {
           return _this.source.create(_this.key, _this.doc).then(function(d) {
             return _this._mask_or_data(d, mask);
-          }).then(_this.after_save);
+          }).then(function(d) {
+            return _this.Q.invoke(_this, 'after_save', d);
+          });
         } else {
           return Boom.notAcceptable("Validation failed");
         }
@@ -105,7 +107,9 @@
           _this.doc = d;
           return _this._mask_or_data(d, mask);
         });
-      }).then(this.after_save);
+      }).then(function(d) {
+        return _this.Q.ninvoke(_this, 'after_save', d);
+      });
     };
 
     CB.remove = function(key) {

@@ -103,7 +103,7 @@ module.exports = class CB extends Base
         if passed
           _this.source.create(_this.key, _this.doc).then( 
             (d) -> _this._mask_or_data(d, mask)
-          ).then _this.after_save
+          ).then (d) -> _this.Q.invoke _this, 'after_save', d
         else
           Boom.notAcceptable "Validation failed"
     )
@@ -130,7 +130,7 @@ module.exports = class CB extends Base
         _this.source.get(_this.key, true).then (d) ->
           _this.doc = d
           _this._mask_or_data(d, mask)
-    ).then @after_save
+    ).then (d) -> _this.Q.ninvoke _this, 'after_save', d
 
   # ## Delete
   # 
