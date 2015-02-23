@@ -204,7 +204,8 @@ describe 'Puffer', ->
         d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
         Recipe.get(recipe.key).then( (d) -> 
           d.should.be.an.instanceof Recipe
-          d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key }
+          console.log d.mask()
+          d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key,  popularity: 100 }
         ).done()
         Recipe.get(recipe.key, true).then(
           (d) -> d.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100, maximum_likes: 100 } 
@@ -224,7 +225,7 @@ describe 'Puffer', ->
         Recipe.get([recipe.key, recipe2.key]).then( (d) -> 
           d.should.be.an.instanceof Array
           d[0].should.be.an.instanceof Recipe
-          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key }
+          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
         ).done()
         Recipe.get([recipe.key, recipe2.key], true).then( (d) -> 
           d.should.be.an.instanceof Array

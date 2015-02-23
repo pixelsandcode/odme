@@ -24,10 +24,15 @@ module.exports = class CB extends Base
     _this = @
     @::source.get(key, true).then (d)->
       return d if d.isBoom || raw
-      return new _this key, d if d not instanceof Array
+      if d not instanceof Array
+        instance = new _this key, d 
+        instance.doc = d
+        return instance
       list = []
       for i in d
-        list.push new _this i.doc_key, i
+        instance = new _this i.doc_key, i
+        instance.doc = i
+        list.push instance
       list
  
   # ## Find

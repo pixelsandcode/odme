@@ -18,17 +18,21 @@
       var _this;
       _this = this;
       return this.prototype.source.get(key, true).then(function(d) {
-        var i, list, _i, _len;
+        var i, instance, list, _i, _len;
         if (d.isBoom || raw) {
           return d;
         }
         if (!(d instanceof Array)) {
-          return new _this(key, d);
+          instance = new _this(key, d);
+          instance.doc = d;
+          return instance;
         }
         list = [];
         for (_i = 0, _len = d.length; _i < _len; _i++) {
           i = d[_i];
-          list.push(new _this(i.doc_key, i));
+          instance = new _this(i.doc_key, i);
+          instance.doc = i;
+          list.push(instance);
         }
         return list;
       });
