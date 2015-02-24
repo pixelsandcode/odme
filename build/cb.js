@@ -93,6 +93,8 @@
             return _this._mask_or_data(d, mask);
           }).then((function(d) {
             return _this.after_save(d);
+          }).bind(_this)).then((function(d) {
+            return _this.after_create(d);
           }).bind(_this));
         } else {
           return Boom.notAcceptable("Validation failed");
@@ -131,6 +133,10 @@
 
     CB.prototype.before_create = function() {
       return true;
+    };
+
+    CB.prototype.after_create = function(data) {
+      return data;
     };
 
     return CB;

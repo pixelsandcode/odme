@@ -108,9 +108,13 @@ module.exports = class CB extends Base
         if passed
           _this.source.create(_this.key, _this.doc).then( 
             (d) -> _this._mask_or_data(d, mask)
-          ).then ((d) -> 
+          ).then( ((d) -> 
               _this.after_save(d)
-            ).bind(_this)  
+            ).bind(_this) 
+          ).then( ((d) -> 
+              _this.after_create(d)
+            ).bind(_this) 
+          ) 
         else
           Boom.notAcceptable "Validation failed"
     )
@@ -137,9 +141,10 @@ module.exports = class CB extends Base
         _this.source.get(_this.key, true).then (d) ->
           _this.doc = d
           _this._mask_or_data(d, mask)
-    ).then ((d) -> 
+    ).then( ((d) -> 
       _this.after_save(d)
       ).bind(_this)
+    )
 
   # ## Delete
   # 
@@ -169,3 +174,9 @@ module.exports = class CB extends Base
   # Before Create hook to assign values or be used as validation. It should return true or false to determine if doc will get saved.
   # 
   before_create: -> return true
+  
+  # ## After Create Callback
+  # 
+  # After create hook to do extra processing on the result. If you want the data being passed in promises chain after calling **after_create** make sure you are returning it
+  # 
+  after_create: (data) -> return data

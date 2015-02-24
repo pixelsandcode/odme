@@ -23,5 +23,10 @@ module.exports = class Recipe extends Base
     !(@doc.views? && @doc.views>1000)
 
   after_save: (data) ->
-    @doc.hits = 0
+    @doc.hits = 1
+    data
+
+  after_create: (data) ->
+    @doc.total_hits = 10
+    data.inc_hit = 2
     data
