@@ -1,6 +1,6 @@
 {
   "name": "odme",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Not a real ODM but will ease dealing with any nosql storage",
   "main": "build/main",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "boom": "^2.6.1",
-    "json-mask": "^0.3.2",
+    "json-mask": "^0.3.3",
     "lodash": "^3.2.0",
     "q": "^1.1.2",
     "shortid": "^2.1.3"
