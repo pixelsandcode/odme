@@ -4,7 +4,7 @@
   "description": "Not a real ODM but will ease dealing with any nosql storage",
   "main": "build/main",
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "mocha --compilers coffee:coffee-script/register",
     "test_cov": "mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter"
   },
   "author": "Arash Kay <a.karimzadeh@gmail.com> (http://tectual.com.au/)",
