@@ -85,7 +85,7 @@ recipe.save(true).then (d) -&gt; console.log d</code></pre></div></div><div clas
     <span class="hljs-property">@Q</span>.invoke( @, <span class="hljs-string">'before_create'</span> ).<span class="hljs-keyword">then</span>(
       <span class="hljs-function"><span class="hljs-params">(passed)</span> -&gt;</span>
         <span class="hljs-keyword">if</span> passed
-          _this.source.create(_this.key, _this.doc).<span class="hljs-keyword">then</span>( 
+          _this.source.insert(_this.key, _this.doc).<span class="hljs-keyword">then</span>( 
             <span class="hljs-function"><span class="hljs-params">(d)</span> -&gt;</span> _this._mask_or_data(d, mask)
           ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
               _this.after_save(d)

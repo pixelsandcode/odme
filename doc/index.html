@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><title>index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="index"><meta name="groc-project-path" content="README.md"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">README.md</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="odme">odme</h1>
+<p><a href="https://travis-ci.org/tectual/odme"><img src="https://travis-ci.org/tectual/odme.svg" alt="Build Status"></a>
+<a href="http://badge.fury.io/js/odme"><img src="https://badge.fury.io/js/odme.svg" alt="npm version"></a>
+<a href="https://coveralls.io/r/tectual/odme?branch=master"><img src="https://coveralls.io/repos/tectual/odme/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<p><a href="https://www.npmjs.com/package/odme">ODME</a> is not an ODM library. It helps you create a class to keep model logic and has some default logic such as setter, getter, masking and creating id with prefixes. All these behaviours can be changed easily at defining your modle classes. It has an extension to support Couchbase and you can add your own extension to support other storages.</p>
+<ul>
+<li>Full documation can be found <a href="http://tectual.github.io/odme/base.html">here</a>.</li>
+<li>Source code is available at <a href="https://github.com/tectual/odme">here</a>.</li>
+</ul>
+<h2 id="how-to-use">How to use</h2>
+<p>You can create your model classes extending Base class of odme.</p>
+<pre><code class="lang-coffeescript">Base = <span class="hljs-built_in">require</span>(<span class="hljs-string">'odme'</span>).Base
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Base</span></span>
+
+  <span class="hljs-attribute">props</span>: {
+    <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attribute">age</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attribute">total_logins</span>: <span class="hljs-literal">false</span>
+  }
+
+  user = <span class="hljs-keyword">new</span> User { <span class="hljs-attribute">name</span>: <span class="hljs-string">'Arash'</span>, <span class="hljs-attribute">age</span>: <span class="hljs-number">32</span>, <span class="hljs-attribute">city</span>: <span class="hljs-string">'Sydney'</span>, <span class="hljs-attribute">total_logins</span>:<span class="hljs-number">10</span> }
+  <span class="hljs-built_in">console</span>.log user.key     <span class="hljs-comment">#user_mJLGt-e6</span>
+  <span class="hljs-built_in">console</span>.log user.doc     
+    <span class="hljs-comment"># { </span>
+    <span class="hljs-comment">#   name: 'Arash',</span>
+    <span class="hljs-comment">#   age: 32,</span>
+    <span class="hljs-comment">#   doc_type: 'user',</span>
+    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment"># }</span>
+  <span class="hljs-built_in">console</span>.log user.mask()
+    <span class="hljs-comment"># { </span>
+    <span class="hljs-comment">#   name: 'Arash',</span>
+    <span class="hljs-comment">#   age: 32,</span>
+    <span class="hljs-comment">#   doc_type: 'user',</span>
+    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment"># }</span>
+
+  user.doc.city = <span class="hljs-string">'Tehran'</span>
+  <span class="hljs-built_in">console</span>.log user.doc
+    <span class="hljs-comment"># { </span>
+    <span class="hljs-comment">#   name: 'Arash',</span>
+    <span class="hljs-comment">#   age: 32,</span>
+    <span class="hljs-comment">#   city: 'Tehran',</span>
+    <span class="hljs-comment">#   doc_type: 'user',</span>
+    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment"># }</span>
+  <span class="hljs-built_in">console</span>.log user.mask()
+    <span class="hljs-comment"># { </span>
+    <span class="hljs-comment">#   name: 'Arash',</span>
+    <span class="hljs-comment">#   age: 32,</span>
+    <span class="hljs-comment">#   doc_type: 'user',</span>
+    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment"># }</span>
+  <span class="hljs-built_in">console</span>.log user.mask(<span class="hljs-string">'name,city'</span>)
+    <span class="hljs-comment"># { </span>
+    <span class="hljs-comment">#   name: 'Arash',</span>
+    <span class="hljs-comment">#   city: 'Tehran'</span>
+    <span class="hljs-comment"># }</span></code></pre>
+<p>You can extend Base class based on your adapters and set a library as <code>source</code> to store your doc property in key of your model object. Check odme and Couchbase integration <a href="http://tectual.github.io/odme/cb.html">here</a>.</p>
+<pre><code class="lang-coffeescript">  Base = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../build/main'</span>).CB
+
+  db = <span class="hljs-keyword">new</span> <span class="hljs-built_in">require</span>(<span class="hljs-string">'puffer'</span>) { <span class="hljs-attribute">host</span>: <span class="hljs-string">'localhost'</span>, <span class="hljs-attribute">name</span>: <span class="hljs-string">'test'</span> }, <span class="hljs-literal">true</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Recipe</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Base</span></span>
+    <span class="hljs-attribute">source</span>: db
+    <span class="hljs-attribute">props</span>: {
+      <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attribute">ingredients</span>: <span class="hljs-literal">true</span>
+    }
+
+  recipe = <span class="hljs-keyword">new</span> Recipe { <span class="hljs-attribute">name</span>: <span class="hljs-string">'Pasta'</span>, <span class="hljs-attribute">ingredients</span>: [<span class="hljs-string">'pasta'</span>, <span class="hljs-string">'basil'</span>, <span class="hljs-string">'olive oil'</span>] }
+
+  <span class="hljs-built_in">console</span>.log recipe.key <span class="hljs-comment"># recipe_yHr0blT</span>
+  recipe.save().<span class="hljs-keyword">then</span> -&gt;
+
+    <span class="hljs-comment">#after save you can get it like this</span>
+    Recipe.get(recipe.key).<span class="hljs-keyword">then</span> (o) -&gt;
+      <span class="hljs-built_in">console</span>.log o <span class="hljs-comment"># return Recipe object</span></code></pre>
+<h2 id="how-to-read-this-doc">How to read this doc?</h2>
+<p>Base class is holding all the logic related to how to get a document and store it in the model class and how it will masked on outputs. Extensions such as CB are doing CRUD operations on models.</p>
+<h3 id="need-more">Need more?</h3>
+<ul>
+<li>Find the full list of available methods <a href="http://tectual.github.io/odme/base.html">here</a>.</li>
+<li>This documentation is generated by <code>groc</code>, you can make a copy of in your local version.</li>
+<li>You can run tests locally by <code>npm test</code>. Make sure you have development dependencies installed.</li>
+</ul></div></div></div></div></body></html>

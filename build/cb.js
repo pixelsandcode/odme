@@ -89,7 +89,7 @@
       _this = this;
       return this.Q.invoke(this, 'before_create').then(function(passed) {
         if (passed) {
-          return _this.source.create(_this.key, _this.doc).then(function(d) {
+          return _this.source.insert(_this.key, _this.doc).then(function(d) {
             return _this._mask_or_data(d, mask);
           }).then((function(d) {
             return _this.after_save(d);

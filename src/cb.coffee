@@ -106,7 +106,7 @@ module.exports = class CB extends Base
     @Q.invoke( @, 'before_create' ).then(
       (passed) ->
         if passed
-          _this.source.create(_this.key, _this.doc).then( 
+          _this.source.insert(_this.key, _this.doc).then( 
             (d) -> _this._mask_or_data(d, mask)
           ).then( ((d) -> 
               _this.after_save(d)

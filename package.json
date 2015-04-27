@@ -1,10 +1,11 @@
 {
   "name": "odme",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Not a real ODM but will ease dealing with any nosql storage",
   "main": "build/main",
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "mocha --compilers coffee:coffee-script/register"
+    "test_cov": "mocha --compilers coffee:coffee-script/register --require blanket --reporter mocha-lcov-reporter"
   },
   "author": "Arash Kay <a.karimzadeh@gmail.com> (http://tectual.com.au/)",
   "license": "ISC",
@@ -22,7 +23,7 @@
     "gulp-coffee": "^2.2.0",
     "mocha": "^2.1.0",
     "mocha-lcov-reporter": "0.0.1",
-    "puffer": "^0.2.4"
+    "puffer": "^1.0.1"
   },
   "dependencies": {
     "boom": "^2.6.1",
