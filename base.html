@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>base</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="base"><meta name="groc-project-path" content="src/base.coffee"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">src/base.coffee</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">ShortID = <span class="hljs-built_in">require</span> <span class="hljs-string">'shortid'</span>
+<!DOCTYPE html><html lang="en"><head><title>base</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="base"><meta name="groc-project-path" content="src/base.coffee"><meta name="groc-github-url" content="https://github.com/tectual/odme"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://github.com/tectual/odme/blob/master/src/base.coffee">src/base.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">ShortID = <span class="hljs-built_in">require</span> <span class="hljs-string">'shortid'</span>
 JsonMask = <span class="hljs-built_in">require</span> <span class="hljs-string">'json-mask'</span>
 _ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
 
@@ -24,15 +24,42 @@ User::source = MySQL
 user.source     # it is MySQL
 User::source    # it is MySQL
 
-Model::source   # it is CB</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">source</span>: <span class="hljs-literal">null</span>
-  <span class="hljs-attribute">PREFIX</span>: <span class="hljs-literal">null</span>
-  <span class="hljs-attribute">doc_type</span>: <span class="hljs-literal">null</span>
-  <span class="hljs-attribute">props</span>: []
-  <span class="hljs-attribute">_mask</span>: <span class="hljs-literal">null</span>
-  <span class="hljs-attribute">Q</span>: <span class="hljs-built_in">require</span> <span class="hljs-string">'q'</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method constructor([@key], @doc, [all])</span></p>
-<h2 id="default-key-generator-for-doc">Default key generator for doc</h2>
-<p>Base constructor of models. It generates a key if only document is passed, by using PREFIX and model ID generator. doc_key and doc_type will always be added to document properties.
-It also mask the document and only accepts properties which are allowed based on <strong>props</strong>. Unless you pass true as last argument</p>
+Model::source   # it is CB</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">source</span>: <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="prefix">PREFIX</h2>
+<p>If you do not set this property, document&#39;s key prefix will be same as class name. If you want to customize it set <code>PREFIX</code> which will be used in <code>_key</code> generator. In case you do not want prefix in your keys, set it to <strong>false</strong>.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">PREFIX</span>: <span class="hljs-literal">null</span>
+  <span class="hljs-attribute">Q</span>: <span class="hljs-built_in">require</span> <span class="hljs-string">'q'</span>
+  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="document-type">Document type</h2>
+<p>Each document has a type which you can define by setting the <code>doc_type</code> property. This type will be saved in document automatically. If you do not set it, it will be same asclass name.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">doc_type</span>: <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><h2 id="properties">Properties</h2>
+<p>This is a list of accepted properties. If you do not set it, whatever is passed to constructor as document will be set as <code>doc</code>. It might be good to list all your properties here for code readability. 
+If you want to stop mass assignment of some attributes you can list them here and set to false. This will also prevent them to get exposed when calling <code>mask</code> (Only if you haven&#39;t defined <code>_mask</code> list).</p>
+<p>Example:</p>
+<pre><code>class User extend Model
+
+  props: { name: true, age: true, last_login: false }
+
+user = new User { name: &#39;Jack Black&#39;, age: 30, last_login: &#39;2015-01-01&#39; }
+user.doc # only name and age are set
+user.mask() # { name: &#39;Jack Black&#39;, age: 30 }</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">props</span>: []</div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><h2 id="default-mask">Default Mask</h2>
+<p>Masking is based on <code>props</code> and only properties which set to true will be exposed. If you want to change this behavior you should set <code>_mask</code>.</p>
+<p>Example:</p>
+<pre><code>class User extend Model
+
+  props: { name: true, age: true, last_login: false }
+  _mask: &#39;name,last_login&#39;
+
+user = new User { name: &#39;Jack Black&#39;, age: 30, last_login: &#39;2015-01-01&#39; }
+user.mask() # { name: &#39;Jack Black&#39;, last_login: &#39;2015-01-01&#39; }</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">_mask</span>: <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method constructor([@key], @doc, [all])</span></p>
+<h2 id="model-constructor">Model Constructor</h2>
+<p>If you call it with <code>new Model(key, doc, [all]), it will store doc in obj.doc and key in obj.key and type in obj.doc_type. Both doc_type and doc_key are added to document and will be stored in storage unless you change this behaviour. 
+If you call it with</code>new Model(doc, [all]), it will do same as above and generate key using <code>_key</code> method and class name as prefix. You can override the <code>_key</code> method to change the key generation behaviour.</p>
+<p>Parameters:</p>
+<ul>
+<li><p><strong>key must be a string.</strong><br/>(this is optional, you can set the key or let class generate one for you.)</p>
+</li>
+<li><p><strong>doc must be a document.</strong><br/>(passed document will be stored in <code>.doc</code> property. Additionally, it will have doc_type and doc_key as object it getting constructed.)</p>
+</li>
+<li><p><strong>all must be a boolean.</strong><br/>(if it is set to true, the whole document will be stored in <code>.doc</code> property by ignoring <code>props</code>.)</p>
+</li>
+</ul>
 <p>Example:</p>
 <pre><code>new Model { prop: value }
 new Model { prop: value }, true
@@ -40,7 +67,7 @@ new Model &#39;key&#39;, { prop: value }
 new Model &#39;key&#39;, { prop: value }, true
 
 user = new User { name: &#39;Arash&#39; }
-user.key # It is like &#39;user_1&#39;. based on PREFIX and _id method
+user.key # It is like &#39;user_1&#39;. based on PREFIX and _key method
 user.doc # The json document { name: &#39;Arash&#39; }
  user = new User &#39;u_1&#39;, { name: &#39;Arash&#39; }
 user.key # It is same as what is passed &#39;u_1&#39;
@@ -55,37 +82,35 @@ user.doc # The json document { name: &#39;Arash&#39; }</code></pre></div></div><
     <span class="hljs-keyword">switch</span> arguments.length
       <span class="hljs-keyword">when</span> <span class="hljs-number">0</span>
         <span class="hljs-property">@doc</span> = <span class="hljs-literal">null</span>
-        <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span> <span class="hljs-property">@_id</span>()
+        <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span>()
       <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> 
         <span class="hljs-property">@doc</span> = <span class="hljs-property">@key</span> || <span class="hljs-literal">null</span>
-        <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span> <span class="hljs-property">@_id</span>()
+        <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span>()
         all = <span class="hljs-literal">false</span>
       <span class="hljs-keyword">when</span> <span class="hljs-number">2</span>
         <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> <span class="hljs-property">@doc</span> == <span class="hljs-string">'boolean'</span>
           all = <span class="hljs-property">@doc</span>
           <span class="hljs-property">@doc</span> = <span class="hljs-property">@key</span> || <span class="hljs-literal">null</span>
-          <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span> <span class="hljs-property">@_id</span>()
+          <span class="hljs-property">@key</span> = <span class="hljs-property">@_key</span>()
       <span class="hljs-keyword">when</span> <span class="hljs-number">3</span>
         all ||= <span class="hljs-literal">false</span>
     <span class="hljs-property">@key</span> = <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@key</span>}</span>"</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@key</span>?
     <span class="hljs-property">@doc</span> = JsonMask <span class="hljs-property">@doc</span>, <span class="hljs-property">@setter_mask</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@doc</span>? &amp;&amp; ! all
     <span class="hljs-keyword">if</span> <span class="hljs-property">@doc</span>?
       <span class="hljs-property">@doc</span>.doc_type = <span class="hljs-property">@doc_type</span> 
-      <span class="hljs-property">@doc</span>.doc_key = <span class="hljs-property">@key</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-private"><div class="wrapper"><p><span class='doc-section-header'>Private method _key(id)</span></p>
+      <span class="hljs-property">@doc</span>.doc_key = <span class="hljs-property">@key</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-private"><div class="wrapper"><p><span class='doc-section-header'>Private method _key</span></p>
 <h2 id="default-key-generator-for-doc">Default key generator for doc</h2>
-<p>This is synchronous key generator of model, this key will be used to save the doc. It can add <strong>PREFIX_</strong> to the id automatically. 
-<strong>PREFIX</strong> is generated automatically from class name or can be defined in class definition.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">_key</span>: <span class="hljs-function"><span class="hljs-params">(id)</span> -&gt;</span>
+<p>This is synchronous key generator of model, this key will be used to save the doc. It adds <strong>PREFIX</strong> with <strong>_</strong> to the id automatically. </p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">_key</span>: <span class="hljs-function"><span class="hljs-params">(id)</span> -&gt;</span>
+    id ||= ShortID.generate()
     <span class="hljs-keyword">if</span> <span class="hljs-property">@PREFIX</span> == <span class="hljs-literal">false</span>
       <span class="hljs-string">"<span class="hljs-subst">#{id}</span>"</span>
     <span class="hljs-keyword">else</span>
-      <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@PREFIX</span>}</span>_<span class="hljs-subst">#{id}</span>"</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-private"><div class="wrapper"><p><span class='doc-section-header'>Private method _id()</span></p>
-<h2 id="default-model-id-generator">Default model ID generator</h2>
-<p>This is synchronous ID generator of model. Default is <strong>shortid</strong> library. It&#39;s used in constructor.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">_id</span>: <span class="hljs-function">-&gt;</span> ShortID.generate()</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method mask([mask])</span></p>
+      <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@PREFIX</span>}</span>_<span class="hljs-subst">#{id}</span>"</span></div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method mask([mask])</span></p>
 <h2 id="mask-output">Mask Output</h2>
-<p>Filter what properties should be exposed using default <strong>_mask</strong> (which is generated from props list).</p>
+<p>Filter what properties should be exposed using <code>props</code> or <code>_mask</code> or passed argument.</p>
 <p>Parameters:</p>
 <ul>
-<li><strong>mask can be a string, an array, or a true.</strong><br/>(if it&#39;s not provided it will return default mask. If it&#39;s string, it will used as masker. If it&#39;s array it will append to the end of _mask property. And if it i&#39;s true it will return all.)</li>
+<li><strong>mask can be a string, an array, or a true.</strong><br/>(if it&#39;s not provided it will return default based on <code>props</code> or <code>_mask</code>. If it&#39;s string, it will used as main mask. If it&#39;s array it will append to the end of _mask property. And if it is true it will return all.)</li>
 </ul>
 <p>Example:</p>
 <pre><code>class User extends Base
@@ -122,7 +147,7 @@ jack.mask()                 # { name: &#39;Jack&#39;, age: 31, total_logins: 10,
 <p>Filter what properties should be exposed using mask or <strong>global_mask</strong> (which is generated from props list).</p>
 <p>Parameters:</p>
 <ul>
-<li><strong>mask must be a string.</strong><br/>(if it&#39;s not provided it will return default class global_mask. If it&#39;s string, it will used as masker. )</li>
+<li><strong>mask must be a string.</strong><br/>(it is the masker and if it&#39;s not provided it will return default class global_mask.)</li>
 </ul>
 <p>Example:</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-property">@mask</span>: <span class="hljs-function"><span class="hljs-params">(doc, mask)</span> -&gt;</span>
     <span class="hljs-keyword">if</span> ! mask?

@@ -9,6 +9,91 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
       "type": "file",
       "data": {
         "language": {
+          "nameMatchers": [".md", ".markdown", ".mkd", ".mkdn", ".mdown"],
+          "commentsOnly": true,
+          "name": "Markdown"
+        },
+        "sourcePath": "/Users/arash/Projects/common_npms/odme/README.md",
+        "projectPath": "README.md",
+        "targetPath": "index",
+        "pageTitle": "index",
+        "firstHeader": {
+          "type": "heading",
+          "data": {
+            "level": 1,
+            "title": "odme",
+            "slug": "odme",
+            "isFileHeader": true
+          },
+          "depth": 1,
+          "children": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "How to use",
+                "slug": "how-to-use"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "How to read this doc?",
+                "slug": "how-to-read-this-doc"
+              },
+              "depth": 2,
+              "children": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "Need more?",
+                    "slug": "need-more"
+                  },
+                  "depth": 3
+                }
+              ]
+            }
+          ]
+        },
+        "title": "odme"
+      },
+      "depth": 1,
+      "outline": [
+        {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "How to use",
+            "slug": "how-to-use"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "How to read this doc?",
+            "slug": "how-to-read-this-doc"
+          },
+          "depth": 2,
+          "children": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Need more?",
+                "slug": "need-more"
+              },
+              "depth": 3
+            }
+          ]
+        }
+      ]
+    }, {
+      "type": "file",
+      "data": {
+        "language": {
           "nameMatchers": [".coffee", "Cakefile"],
           "pygmentsLexer": "coffee-script",
           "highlightJS": "coffeescript",
@@ -39,8 +124,40 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Default key generator for doc",
-            "slug": "default-key-generator-for-doc"
+            "title": "PREFIX",
+            "slug": "prefix"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Document type",
+            "slug": "document-type"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Properties",
+            "slug": "properties"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Default Mask",
+            "slug": "default-mask"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "Model Constructor",
+            "slug": "model-constructor"
           },
           "depth": 2
         }, {
@@ -49,14 +166,6 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "level": 2,
             "title": "Default key generator for doc",
             "slug": "default-key-generator-for-doc"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Default model ID generator",
-            "slug": "default-model-id-generator"
           },
           "depth": 2
         }, {
