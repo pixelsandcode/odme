@@ -1,6 +1,6 @@
 {
   "name": "odme",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "Not a real ODM but will ease dealing with any nosql storage",
   "main": "build/main",
   "scripts": {

@@ -12,13 +12,13 @@
 
     Model.prototype.PREFIX = null;
 
+    Model.prototype.Q = require('q');
+
     Model.prototype.doc_type = null;
 
     Model.prototype.props = [];
 
     Model.prototype._mask = null;
-
-    Model.prototype.Q = require('q');
 
     function Model(_at_key, _at_doc, all) {
       this.key = _at_key;
@@ -42,18 +42,18 @@
       switch (arguments.length) {
         case 0:
           this.doc = null;
-          this.key = this._key(this._id());
+          this.key = this._key();
           break;
         case 1:
           this.doc = this.key || null;
-          this.key = this._key(this._id());
+          this.key = this._key();
           all = false;
           break;
         case 2:
           if (typeof this.doc === 'boolean') {
             all = this.doc;
             this.doc = this.key || null;
-            this.key = this._key(this._id());
+            this.key = this._key();
           }
           break;
         case 3:
@@ -72,15 +72,12 @@
     }
 
     Model.prototype._key = function(id) {
+      id || (id = ShortID.generate());
       if (this.PREFIX === false) {
         return "" + id;
       } else {
         return this.PREFIX + "_" + id;
       }
-    };
-
-    Model.prototype._id = function() {
-      return ShortID.generate();
     };
 
     Model.prototype.mask = function(mask) {

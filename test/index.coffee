@@ -139,21 +139,21 @@ describe 'Puffer', ->
     recipe.should.have.property('key').not.be.a('null')
 
     recipe.doc.popularity = 100
-    recipe.save().then(
+    recipe.create().then(
       (d) ->
         d.should.have.property('cas')
     ).done()
 
     recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe2.doc.popularity = 100
-    recipe2.save(true).then(
+    recipe2.create(true).then(
       (d) ->
         d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100, maximum_likes: 100, inc_hit: 2 }
     ).done()
 
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
-    recipe.save('name').then(
+    recipe.create('name').then(
       (d) ->
         d.should.eql { name: 'Pasta', inc_hit: 2 }
     ).done()
@@ -162,7 +162,7 @@ describe 'Puffer', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.save([]).then(
+    recipe.create([]).then(
       (d) ->
         d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
         recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1 }
@@ -177,7 +177,7 @@ describe 'Puffer', ->
     recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe2.doc.popularity = 100
 
-    recipe2.save([]).then(
+    recipe2.create([]).then(
       (d) ->
         updater = new Recipe recipe2.key, { name: 'Pasta Bolognese' }
         updater.update(true).then(
@@ -190,7 +190,7 @@ describe 'Puffer', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.save([]).then(
+    recipe.create([]).then(
       (d) ->
         d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
         Recipe.remove(recipe.key).then (d) -> d.should.equal true
@@ -200,7 +200,7 @@ describe 'Puffer', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.save([]).then(
+    recipe.create([]).then(
       (d) ->
         d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
         Recipe.get(recipe.key).then( (d) -> 
@@ -208,19 +208,19 @@ describe 'Puffer', ->
           d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key,  popularity: 100 }
         ).done()
         Recipe.get(recipe.key, true).then(
-          (d) -> d.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100, maximum_likes: 100 } 
+          (d) -> d.value.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100, maximum_likes: 100 } 
         ).done()
     )
 
   it "should get the docs & return JS instance", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
-    recipe.save()
+    recipe.create()
 
     recipe2 = new Recipe { name: 'Pizza', origin: 'Italy' }
     recipe2.doc.popularity = 110
 
-    recipe2.save([]).then(
+    recipe2.create([]).then(
       (d) ->
         Recipe.get([recipe.key, recipe2.key]).then( (d) -> 
           d.should.be.an.instanceof Array
@@ -228,20 +228,21 @@ describe 'Puffer', ->
           d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
         ).done()
         Recipe.get([recipe.key, recipe2.key], true).then( (d) -> 
-          d.should.be.an.instanceof Array
-          Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe' }
+          d.should.be.an.instanceof Object
+          d[recipe.key].should.have.property 'cas'
+          Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe' }
         ).done()
     )
 
   it "should find the docs & return JS instance", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
-    recipe.save()
+    recipe.create()
 
     recipe2 = new Recipe { name: 'Pizza', origin: 'Italy' }
     recipe2.doc.popularity = 110
 
-    recipe2.save([]).then(
+    recipe2.create([]).then(
       (d) ->
         Recipe.find([recipe.key, recipe2.key]).then( (d) -> 
           d.should.be.an.instanceof Array
@@ -264,6 +265,6 @@ describe 'Puffer', ->
   it "should fail on before_create returning false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.views = 10000
-    recipe.save().then (d) ->
+    recipe.create().then (d) ->
       d.should.be.an.instanceof Error
 

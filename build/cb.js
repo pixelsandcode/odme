@@ -17,7 +17,8 @@
     CB.get = function(key, raw) {
       var _this;
       _this = this;
-      return this.prototype.source.get(key, true).then(function(d) {
+      raw || (raw = false);
+      return this.prototype.source.get(key, !raw).then(function(d) {
         var i, instance, list, _i, _len;
         if (d.isBoom || raw) {
           return d;
@@ -84,7 +85,7 @@
       }
     };
 
-    CB.prototype.save = function(mask) {
+    CB.prototype.create = function(mask) {
       var _this;
       _this = this;
       return this.Q.invoke(this, 'before_create').then(function(passed) {

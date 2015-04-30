@@ -2,7 +2,12 @@ Base = require('../build/main').Base
 
 class Model extends Base
   
-  _id: -> 'fixedID'
+  _key: -> 
+    id = 'fixedID'
+    if @PREFIX == false
+      "#{id}"
+    else
+      "#{@PREFIX}_#{id}"
 
 module.exports = class User extends Model
   

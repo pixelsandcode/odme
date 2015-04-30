@@ -22,7 +22,8 @@ module.exports = class CB extends Base
   # 
   @get: (key, raw)->
     _this = @
-    @::source.get(key, true).then (d)->
+    raw ||= false
+    @::source.get(key, !raw).then (d)->
       return d if d.isBoom || raw
       if d not instanceof Array
         instance = new _this key, d 
@@ -42,9 +43,9 @@ module.exports = class CB extends Base
   # @method find(key[, raw[, as_object]])
   # @public
   # 
-  # @param {string}  key(s)     document key(s) which should be retrieved
-  # @param {boolean|string} raw        if it's true it returns raw document, if it is string it will be considered as a mask
-  # @param {boolean} as_object  if it's set to true it will return the masked result as object.
+  # @param {string}         key(s)     document key(s) which should be retrieved
+  # @param {boolean|string} raw        if it's true it returns raw document, if it is string, it will be considered as a mask
+  # @param {boolean}        as_object  if it's set to true it will return the masked result as object.
   # 
   # @example
   #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
@@ -91,17 +92,17 @@ module.exports = class CB extends Base
   # 
   # Save the doc in assigned key. It can return masked doc after saving.
   # 
-  # @method save([mask])
+  # @method create([mask])
   # @public
   # 
-  # @param {string|array|true}           mask  this works exactly same way mask(mask) method works
+  # @param {string|array|true}           mask  this works same as mask(mask) method.
   # 
   # @example
   #   recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
   #   recipe.doc.popularity = 100
-  #   recipe.save(true).then (d) -> console.log d
+  #   recipe.create(true).then (d) -> console.log d
   # 
-  save: (mask)->
+  create: (mask)->
     _this = @
     @Q.invoke( @, 'before_create' ).then(
       (passed) ->
@@ -122,12 +123,12 @@ module.exports = class CB extends Base
 
   # ## Update
   # 
-  # Update the existing doc in assigned key. It can return masked doc after saving.
+  # Update an existing doc using its key. It can return masked doc after saving.
   # 
   # @method update([mask])
   # @public
   # 
-  # @param {string|array|true}           mask  this works exactly same way mask(mask) method works
+  # @param {string|array|true}           mask  this works same as mask(mask) method.
   # 
   # @example
   #   recipe = new Recipe "recipe_xhygd12gH3", { name: 'Anti Pasta' }
@@ -165,18 +166,18 @@ module.exports = class CB extends Base
   
   # ## After Save Callback
   # 
-  # You can after save callback in your models. If you want the data being passed in promises chain after calling **after_save** make sure you are returning it
+  # Override save callback in your models. If you want the data being passed in promises chain after calling **after_save** make sure you are returning it. This will be called after create and update.
   # 
   after_save: (data) -> return data
   
   # ## Before create Callback
   # 
-  # Before Create hook to assign values or be used as validation. It should return true or false to determine if doc will get saved.
+  # Before Create can be used to assign values or as validation. It should return true or false to determine if doc will get saved.
   # 
   before_create: -> return true
   
   # ## After Create Callback
   # 
-  # After create hook to do extra processing on the result. If you want the data being passed in promises chain after calling **after_create** make sure you are returning it
+  # After create hook to do extra processing on the result. If you want the data being passed in promises chain after calling **after_create** make sure you are returning it. `after_save` callback will be called before this.
   # 
   after_create: (data) -> return data
