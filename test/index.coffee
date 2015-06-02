@@ -268,3 +268,9 @@ describe 'Puffer', ->
     recipe.create().then (d) ->
       d.should.be.an.instanceof Error
 
+  it "should set is_new only if the object is not loaded from storage", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.is_new.should.be.equal true
+    recipe.create().then (d) ->
+      Recipe.get(recipe.key).then (obj) ->
+        obj.is_new.should.be.equal false

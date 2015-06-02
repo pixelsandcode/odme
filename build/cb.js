@@ -1,39 +1,43 @@
 (function() {
   var Base, Boom, CB,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __hasProp = {}.hasOwnProperty;
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
 
   Base = require('./base');
 
   Boom = require('boom');
 
-  module.exports = CB = (function(_super) {
-    __extends(CB, _super);
+  module.exports = CB = (function(superClass) {
+    extend(CB, superClass);
 
     function CB() {
       return CB.__super__.constructor.apply(this, arguments);
     }
 
     CB.get = function(key, raw) {
-      var _this;
+      var _this, make;
       _this = this;
       raw || (raw = false);
+      make = function(k, d) {
+        var instance;
+        instance = new _this(k, d);
+        instance.doc = d;
+        instance.key = k;
+        instance.is_new = false;
+        return instance;
+      };
       return this.prototype.source.get(key, !raw).then(function(d) {
-        var i, instance, list, _i, _len;
+        var i, j, len, list;
         if (d.isBoom || raw) {
           return d;
         }
         if (!(d instanceof Array)) {
-          instance = new _this(key, d);
-          instance.doc = d;
-          return instance;
+          return make(key, d);
         }
         list = [];
-        for (_i = 0, _len = d.length; _i < _len; _i++) {
-          i = d[_i];
-          instance = new _this(i.doc_key, i);
-          instance.doc = i;
-          list.push(instance);
+        for (j = 0, len = d.length; j < len; j++) {
+          i = d[j];
+          list.push(make(i.doc_key, i));
         }
         return list;
       });
@@ -43,7 +47,7 @@
       var _this;
       _this = this;
       return this.prototype.source.get(key, true).then(function(d) {
-        var i, list, mask, o, _i, _j, _len, _len1;
+        var i, j, l, len, len1, list, mask, o;
         if (d.isBoom || ((raw != null) && raw === true)) {
           return d;
         }
@@ -61,14 +65,14 @@
         } else {
           if ((as_object != null) && as_object) {
             list = {};
-            for (_i = 0, _len = d.length; _i < _len; _i++) {
-              i = d[_i];
+            for (j = 0, len = d.length; j < len; j++) {
+              i = d[j];
               list[i.doc_key] = _this.mask(i, mask);
             }
           } else {
             list = [];
-            for (_j = 0, _len1 = d.length; _j < _len1; _j++) {
-              i = d[_j];
+            for (l = 0, len1 = d.length; l < len1; l++) {
+              i = d[l];
               list.push(_this.mask(i, mask));
             }
           }

@@ -20,9 +20,10 @@
 
     Model.prototype._mask = null;
 
-    function Model(_at_key, _at_doc, all) {
-      this.key = _at_key;
-      this.doc = _at_doc;
+    function Model(key, doc1, all) {
+      this.key = key;
+      this.doc = doc1;
+      this.is_new = true;
       if (this.PREFIX == null) {
         this.PREFIX = this.constructor.name.toLowerCase();
       }

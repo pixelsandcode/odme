@@ -102,6 +102,7 @@ module.exports = class Model
   #   user.doc # The json document { name: 'Arash' }
   # 
   constructor: (@key, @doc, all) ->
+    @is_new = true
     @PREFIX = @constructor.name.toLowerCase() if ! @PREFIX?
     @doc_type = @constructor.name.toLowerCase() if ! @doc_type?
     @_keys = _.keys _.pick( @props, (i) -> i )

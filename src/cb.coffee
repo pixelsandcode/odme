@@ -23,17 +23,19 @@ module.exports = class CB extends Base
   @get: (key, raw)->
     _this = @
     raw ||= false
+    make = (k, d) ->
+      instance = new _this k, d
+      instance.doc = d
+      instance.key = k
+      instance.is_new = false
+      instance
     @::source.get(key, !raw).then (d)->
       return d if d.isBoom || raw
       if d not instanceof Array
-        instance = new _this key, d 
-        instance.doc = d
-        return instance
+        return make( key, d )
       list = []
       for i in d
-        instance = new _this i.doc_key, i
-        instance.doc = i
-        list.push instance
+        list.push make( i.doc_key, i )
       list
  
   # ## Find
