@@ -126,7 +126,7 @@ module.exports = class Model
       when 3
         all ||= false
     @key = "#{@key}" if @key?
-    @doc = JsonMask @doc, @setter_mask if @doc? && ! all
+    @doc = JsonMask(@doc, @setter_mask) || {} if @doc? && ! all
     if @doc?
       @doc.doc_type = @doc_type 
       @doc.doc_key = @key
