@@ -64,7 +64,7 @@
         this.key = "" + this.key;
       }
       if ((this.doc != null) && !all) {
-        this.doc = JsonMask(this.doc, this.setter_mask);
+        this.doc = JsonMask(this.doc, this.setter_mask) || {};
       }
       if (this.doc != null) {
         this.doc.doc_type = this.doc_type;

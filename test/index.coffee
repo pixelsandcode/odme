@@ -78,10 +78,10 @@ describe 'Base', ->
     user.should.have.property('PREFIX').that.equal 'u'
     user.key.should.equal "u_fixedID"
 
-  it 'should have @doc_type same as class name and set @doc.doc_type only if @doc is not null', ->
+  it 'should have @doc_type same as class name and set @doc.doc_type even if @doc was empty', ->
     user = new User {}
     user.should.have.property('doc_type').that.equal 'user'
-    user.should.have.property('doc').that.be.a 'null'
+    user.should.have.property('doc').that.be.not.a 'null'
     user = new User { name: 'Arash' }
     user.should.have.property('doc_type').that.equal 'user'
 
