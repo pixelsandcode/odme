@@ -48,10 +48,10 @@ describe 'Base', ->
     user2 = new User
     user2.source.should.equal 'MySQL'
     
-  it "should have null @doc and default @key on creation", ->
+  it "should have {} @doc and default @key on creation", ->
     user = new User
-    user.should.have.property('key')
-    user.should.have.property('doc')
+    user.should.have.property('key').that.not.equal null
+    user.should.have.property('doc').that.not.equal null
     arash = new User { name: 'Arash' }
     arash.should.have.property('key').that.not.equal null
     arash.should.have.property('doc').that.have.property('name').that.equal 'Arash'
@@ -129,7 +129,12 @@ describe 'Base', ->
     User::global_mask.should.be.equal 'name,age,city,country,doc_type,doc_key'
     User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, doc_key: '123' }).should.eql { name: 'Jack', age: 31, doc_key: '123' }
 
-describe 'Puffer', ->
+  it "should override key generation method", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.key.should.match /recipe$/
+    recipe.key.should.be.eql recipe.doc.doc_key
+
+describe 'CB', ->
 
   it "should create a doc & return masked doc or db's result", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
@@ -171,7 +176,7 @@ describe 'Puffer', ->
         updater.update([]).then(
           (u) ->
             u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
-            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1 }
+            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 11 }
         )
     ).done()
     recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
@@ -185,6 +190,43 @@ describe 'Puffer', ->
             u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe2.key, doc_type: 'recipe', maximum_likes: 100 }
         )
     ).done()
+  
+  it "should get and update a doc", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create([]).then(
+      (d) ->
+        updater = Recipe.get(recipe.key).then (obj) ->
+          obj.doc.name = 'Anti Pasta'
+          obj.update([]).then(
+            (doc) -> 
+              doc.should.eql { name: 'Anti Pasta', origin: 'Italy', doc_key: recipe.key }
+          )
+    )
+    
+  it "should excute after save and after update", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create([]).then(
+      (d) ->
+        updater = new Recipe recipe.key, {}
+        updater.update([]).then(
+          (doc) ->
+            updater.doc.hits.should.eql 11
+        )
+    )
+
+  it "should fail on double updates", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create([]).then(
+      (d) ->
+        Recipe.get(recipe.key).then (updater1) ->
+          Recipe.get(recipe.key).then (updater2) ->
+            updater1.origin = 'China'
+            updater1.update([]).then (d) ->
+              d.should.not.be.an.instanceof Error
+              updater2.origin = 'Spain'
+              updater2.update().then (d) ->
+                d.should.be.an.instanceof Error
+  )
 
   it "should remove a doc & return true or false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
@@ -267,6 +309,24 @@ describe 'Puffer', ->
     recipe.doc.views = 10000
     recipe.create().then (d) ->
       d.should.be.an.instanceof Error
+
+  it "should fail on before_save returning false", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.can_save = false
+    recipe.create().then (d) ->
+      d.should.be.an.instanceof Error
+      d.message.should.be.eql 'Custom Boom'
+
+  it "should fail on before_update returning false", ->
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create().then (d) ->
+      updater = new Recipe recipe.key, { name: 'Pasta Bolognese' }
+      updater.doc.is_locked = true
+      updater.update(true).then(
+        (u) ->
+          u.should.be.an.instanceof Error
+          u.message.should.be.eql 'Validation failed'
+      )
 
   it "should set is_new only if the object is not loaded from storage", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }

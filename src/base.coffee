@@ -33,7 +33,7 @@ module.exports = class Model
 
   # ## PREFIX
   # 
-  # If you do not set this property, document's key prefix will be same as class name. If you want to customize it set `PREFIX` which will be used in `_key` generator. In case you do not want prefix in your keys, set it to **false**.
+  # PREFIX is used in key generation method (all ODME objects have a key). If you do not set this property, the key's prefix will be same as class name. If you want to customize it set `PREFIX` to what you like. In case you do not want prefix in your keys, set it to **false**.
   # 
   PREFIX: null
   Q: require 'q'
@@ -46,8 +46,11 @@ module.exports = class Model
 
   # ## Properties
   # 
-  # This is a list of accepted properties. If you do not set it, whatever is passed to constructor as document will be set as `doc`. It might be good to list all your properties here for code readability. 
-  # If you want to stop mass assignment of some attributes you can list them here and set to false. This will also prevent them to get exposed when calling `mask` (Only if you haven't defined `_mask` list).
+  # This is a list of accepted properties on mass-assignments. Your ODME object normally accept only a limited list of properties on mass-assignments and the rest should be added one by one by calling `model.doc.prop = value`. 
+  #
+  # If you do not set props, whatever is passed to constructor as document will be set as `.doc`. Even if you want all properties to be passed to `.doc`, it is good to list all properties in props and setting them to true for code readability. 
+  #
+  # To stop mass assignment of some attributes you should set them to false. This will also affect your mask method and prevent those properties from getting exposed when calling `.mask()` (This can be changed by defining `_mask` list).
   # 
   # @examples
   #   class User extend Model
@@ -56,13 +59,15 @@ module.exports = class Model
   #     
   #   user = new User { name: 'Jack Black', age: 30, last_login: '2015-01-01' }
   #   user.doc # only name and age are set
+  #   user.doc.gender = 'male'           # Extend your document with more properties
+  #   user.doc.email =  'jack@gmail.com' # Extend your document with more properties
   #   user.mask() # { name: 'Jack Black', age: 30 }
   # 
   props: []
 
   # ## Default Mask
   # 
-  # Masking is based on `props` and only properties which set to true will be exposed. If you want to change this behavior you should set `_mask`.
+  # Masking is based on `props` by default and only properties which set to true will be exposed. If you want to change this behavior you should set `_mask`.
   # 
   # @examples
   #   class User extend Model
@@ -77,29 +82,52 @@ module.exports = class Model
 
   # ## Model Constructor
   # 
-  # If you call it with `new Model(key, doc, [all]), it will store doc in obj.doc and key in obj.key and type in obj.doc_type. Both doc_type and doc_key are added to document and will be stored in storage unless you change this behaviour. 
-  # If you call it with `new Model(doc, [all]), it will do same as above and generate key using `_key` method and class name as prefix. You can override the `_key` method to change the key generation behaviour.
-  #
-  # @param {string}    key   this is optional, you can set the key or let class generate one for you.
-  # @param {document}  doc   passed document will be stored in `.doc` property. Additionally, it will have doc_type and doc_key as object it getting constructed.
-  # @param {boolean}   all   if it is set to true, the whole document will be stored in `.doc` property by ignoring `props`.
-  #
-  # @method constructor([@key], @doc, [all])
-  # @public
-  # 
-  # @examples
+  # This will create a new document object of your model and behave as below:
+  # ```
   #   new Model { prop: value }
   #   new Model { prop: value }, true
   #   new Model 'key', { prop: value }
   #   new Model 'key', { prop: value }, true
-  #   
-  #   user = new User { name: 'Arash' }
-  #   user.key # It is like 'user_1'. based on PREFIX and _key method
-  #   user.doc # The json document { name: 'Arash' }
+  # ```
+  #
+  # ODME object stores document in `.doc` and generated/assgined key in `.key` properties. When the ODME object is new, it sets the `.is_new` to true. This `.is_new` property can be used to determine if the document is already stored in Data Storage (If you are implementing your own adapter, read CB adapter first.).
+  #
+  # ### Blank document object with new key
   # 
-  #   user = new User 'u_1', { name: 'Arash' }
-  #   user.key # It is same as what is passed 'u_1'
-  #   user.doc # The json document { name: 'Arash' }
+  # Create a new document object by calling `new Model`. This will generate a new key for your ODME document. An ODME document always has 2 properties by default *doc_type* and *doc_key*. 
+  # ```
+  #   model = new Model
+  #   model.doc # { doc_type: 'cb', doc_key: 'cb_VknHXYjH' }
+  #   model.key # 'cb_VknHXYjH'
+  # ```
+  # ### Document object with new key
+  # 
+  # Create a new document object using your own properties and a new key by calling `new Model doc`. The ODME document includes your properties plus *doc_type* and *doc_key*.  
+  # ```
+  #   model = new Model { name: 'Jack' }
+  #   model.doc # { name: 'Jack', doc_type: 'cb', doc_key: 'cb_Vy2qXtiH' }
+  #   model.key # 'cb_Vy2qXtiH'
+  # ```
+  # ### Blank document object with a key
+  # 
+  # Create a new document object using your own key by calling `new Model key, {}`. This will use your key for your ODME document which has *doc_type* and *doc_key* in its properties. 
+  # If you call it like this `new Model key, doc`, it will use assign your doc properties to ODME document plus *doc_type* and *doc_key*.
+  # ```
+  #   model = new Model 123, { name: 'Jack' }
+  #   model.doc # { name: 'Jack', doc_type: 'cb', doc_key: '123' }
+  #   model.key # '123'
+  # ```
+  # You can change how key is getting generated by overriding `_key` method.
+  # ### Property Filtering
+  # 
+  # ODME filters the properties on mass-assignments using `props`. If you want to skip this filtering in some cases the constructor accepts a third argument which is a boolean and if it sets to true it will ignore filtering.
+  #
+  # @param {string}    key   this is optional, you can set the key or let your ODME class generate one for you.
+  # @param {document}  doc   passed document will be stored in `.doc` property. Additionally, it will have doc_type and doc_key as it's getting constructed.
+  # @param {boolean}   all   if it is set to true, the whole document will be stored in `.doc` property by ignoring `props`. Default is `false`.
+  #
+  # @method constructor([@key], @doc, [all])
+  # @public
   # 
   constructor: (@key, @doc, all) ->
     @is_new = true
@@ -112,16 +140,16 @@ module.exports = class Model
       @_mask += ',doc_type,doc_key' if  @_mask != ''
     switch arguments.length
       when 0
-        @doc = null
+        @doc = {}
         @key = @_key()
       when 1 
-        @doc = @key || null
+        @doc = @key || {}
         @key = @_key()
         all = false
       when 2
         if typeof @doc == 'boolean'
           all = @doc
-          @doc = @key || null
+          @doc = @key || {}
           @key = @_key()
       when 3
         all ||= false
@@ -133,7 +161,7 @@ module.exports = class Model
 
   # ## Default key generator for doc
   # 
-  # This is synchronous key generator of model, this key will be used to save the doc. It adds **PREFIX** with **_** to the id automatically. 
+  # This is synchronous key generator of model, this key will be used to save the `.doc` and a copy of it is included in the `.doc`. It adds **PREFIX** with **_** to the id automatically only if it is not set to `false`. You can override this behaviour in your model classes.
   #
   # @method _key
   # @private
@@ -152,7 +180,7 @@ module.exports = class Model
   # @method mask([mask])
   # @public
   # 
-  # @param {string|array|true}           mask   if it's not provided it will return default based on `props` or `_mask`. If it's string, it will used as main mask. If it's array it will append to the end of _mask property. And if it is true it will return all.
+  # @param {string|array|true}           mask   if it's not provided it will return `.doc` properties based on `props` attribute or `_mask` if its defined. If it's a string, it will be used as mask and ignore `_mask` and `props`. If it's an array it will append the listed properties to the end of `_mask` property. And if it is true it will return all properties in `.doc`.
   #
   # @examples
   #   class User extends Base
@@ -164,7 +192,7 @@ module.exports = class Model
   #   jack.mask()                 # { name: 'Jack', age: 31 }
   #   jack.mask('name')           # { name: 'Jack' }
   #   jack.mask(['total_logins']) # { name: 'Jack', age: 31, total_logins: 10 }
-  #   jack.mask(false)            # { name: 'Jack', age: 31, total_logins: 10 }
+  #   jack.mask(true)             # { name: 'Jack', age: 31, total_logins: 10 }
   #   
   #   class User extends Base
   #     props: { name: true, age: true, total_logins: false }

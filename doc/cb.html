@@ -3,7 +3,8 @@ Boom = <span class="hljs-built_in">require</span> <span class="hljs-string">'boo
 <p>This Model class is using puffer for CRUDing. It&#39;s recommended to read <a href="https://www.npmjs.com/package/puffer">puffer&#39;s documentation</a> first.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CB</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Base</span></span>
   </div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method get(key[, raw])</span></p>
 <h2 id="get">Get</h2>
-<p>Get the existing doc by key. It can return raw document (only value part) or instantiate from the javascript class</p>
+<p>Get the existing doc by key and instantiate an ODME object. The returned object has <code>.is_new</code> property set to <code>false</code>. If you don&#39;t need the ODME object and only need the doc to work with, you should pass <code>true</code> as the second parameter which will return the raw Couchbase Document and it&#39;s slightly faster.</p>
+<p>If you pass an array list of keys, it can get all those documents, only if they all exists.</p>
 <p>Parameters:</p>
 <ul>
 <li><p><strong>key must be a string.</strong><br/>((s) document key(s) which should be retrieved)</p>
@@ -14,28 +15,32 @@ Boom = <span class="hljs-built_in">require</span> <span class="hljs-string">'boo
 <p>Example:</p>
 <pre><code>recipe.get(&#39;recipe_uX87dkF3Bj&#39;).then (d) -&gt; console.log d</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-property">@get</span>: <span class="hljs-function"><span class="hljs-params">(key, raw)</span>-&gt;</span>
     _this = @
-    @::source.get(key, <span class="hljs-literal">true</span>).<span class="hljs-keyword">then</span> (d)-&gt;
+    raw ||= <span class="hljs-literal">false</span>
+<span class="hljs-function">    <span class="hljs-title">make</span> = <span class="hljs-params">(k, d)</span> -&gt;</span>
+      instance = <span class="hljs-keyword">new</span> _this k, d
+      instance.doc = d.value
+      instance.cas = d.cas
+      instance.key = k
+      instance.is_new = <span class="hljs-literal">false</span>
+      instance
+    @::source.get(key).<span class="hljs-keyword">then</span> (d)-&gt;
       <span class="hljs-keyword">return</span> d <span class="hljs-keyword">if</span> d.isBoom || raw
       <span class="hljs-keyword">if</span> d <span class="hljs-keyword">not</span> <span class="hljs-keyword">instanceof</span> Array
-        instance = <span class="hljs-keyword">new</span> _this key, d 
-        instance.doc = d
-        <span class="hljs-keyword">return</span> instance
+        <span class="hljs-keyword">return</span> make( key, d )
       list = []
       <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> d
-        instance = <span class="hljs-keyword">new</span> _this i.doc_key, i
-        instance.doc = i
-        list.push instance
+        list.push make( i.doc_key, i )
       list
  </div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method find(key[, raw[, as_object]])</span></p>
 <h2 id="find">Find</h2>
-<p>Find the existing docs by keys. It can return raw document (only value part) or the masked version of document. It uses <strong>_mask</strong> if it is defined in the class level as default filter.</p>
+<p>Find the existing doc by key (it can get list of keys as well). It can return raw Couchbase Document or the masked version of it. It uses <strong>props</strong> or <strong>_mask</strong> as default filter unless you pass the a string of mask as second parameter.</p>
 <p>Parameters:</p>
 <ul>
 <li><p><strong>key must be a string.</strong><br/>((s) document key(s) which should be retrieved)</p>
 </li>
-<li><p><strong>raw can be a boolean or a string.</strong><br/>(if it&#39;s true it returns raw document, if it is string it will be considered as a mask)</p>
+<li><p><strong>raw can be a boolean or a string.</strong><br/>(if it&#39;s true it returns raw document, if it is string, it will be considered as a mask. Default is false and it will mask the document)</p>
 </li>
-<li><p><strong>as_object must be a boolean.</strong><br/>(if it&#39;s set to true it will return the masked result as object.)</p>
+<li><p><strong>as_object must be a boolean.</strong><br/>(this property only works if the <code>raw</code> parameter is set to false. If it&#39;s true, it converts the array list of documents to the object, which means you can find a doc by it&#39;s <code>doc_key</code> in that object. It helps you to access documents in the result set by their keys.)</p>
 </li>
 </ul>
 <p>Example:</p>
@@ -62,7 +67,7 @@ Boom = <span class="hljs-built_in">require</span> <span class="hljs-string">'boo
             list.push _this.mask i, mask 
         list</div></div></div><div class="segment"><div class="comments doc-section doc-section-private"><div class="wrapper"><p><span class='doc-section-header'>Private method _mask_or_data(data[, mask])</span></p>
 <h2 id="mask-or-data">Mask or Data</h2>
-<p>Check the CB callback&#39;s result and if it is alright and masked version is requested, it will return the masked result. </p>
+<p>Check the CB callback&#39;s result and make sure there was no error. If so and masked version is requested, it will return the masked result. </p>
 <p>Parameters:</p>
 <ul>
 <li><strong>mask can be a string, an array, or a true.</strong><br/>(this works exactly same way mask(mask) method works)</li>
@@ -70,55 +75,99 @@ Boom = <span class="hljs-built_in">require</span> <span class="hljs-string">'boo
     <span class="hljs-keyword">if</span> data.isBoom || ! mask?
       data
     <span class="hljs-keyword">else</span>
-      <span class="hljs-property">@mask</span> mask</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method save([mask])</span></p>
-<h2 id="save">Save</h2>
-<p>Save the doc in assigned key. It can return masked doc after saving.</p>
+      <span class="hljs-property">@mask</span> mask</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method create([mask])</span></p>
+<h2 id="create">Create</h2>
+<p>Create the doc in assigned key. It can return masked doc after creating.</p>
+<p>Creation will only work if both <code>before_create</code> and <code>before_save</code> return true (which they do by default unless you override them). You can use these methods to add your pre-creation logic to change the document or use them as validations.</p>
+<p>After creating the doc, <code>after_save</code> and <code>after_create</code> methods will be called. These are useful when you want to execute post creation logic.</p>
 <p>Parameters:</p>
 <ul>
-<li><strong>mask can be a string, an array, or a true.</strong><br/>(this works exactly same way mask(mask) method works)</li>
+<li><strong>mask can be a string, an array, or a true.</strong><br/>(this works same as mask(mask) method.)</li>
 </ul>
 <p>Example:</p>
 <pre><code>recipe = new Recipe { name: &#39;Pasta&#39;, origin: &#39;Italy&#39; }
 recipe.doc.popularity = 100
-recipe.save(true).then (d) -&gt; console.log d</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">save</span>: <span class="hljs-function"><span class="hljs-params">(mask)</span>-&gt;</span>
+recipe.create(true).then (d) -&gt; console.log d</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">create</span>: <span class="hljs-function"><span class="hljs-params">(mask)</span>-&gt;</span>
     _this = @
     <span class="hljs-property">@Q</span>.invoke( @, <span class="hljs-string">'before_create'</span> ).<span class="hljs-keyword">then</span>(
       <span class="hljs-function"><span class="hljs-params">(passed)</span> -&gt;</span>
-        <span class="hljs-keyword">if</span> passed
-          _this.source.insert(_this.key, _this.doc).<span class="hljs-keyword">then</span>( 
-            <span class="hljs-function"><span class="hljs-params">(d)</span> -&gt;</span> _this._mask_or_data(d, mask)
-          ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
-              _this.after_save(d)
-            ).bind(_this) 
-          ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
-              _this.after_create(d)
-            ).bind(_this) 
-          ) 
+        <span class="hljs-keyword">if</span> passed == <span class="hljs-literal">true</span>
+          _this.Q.invoke( _this, <span class="hljs-string">'before_save'</span> )
         <span class="hljs-keyword">else</span>
-          Boom.notAcceptable <span class="hljs-string">"Validation failed"</span>
-    )</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method update([mask])</span></p>
+          passed
+      ).<span class="hljs-keyword">then</span>(
+        <span class="hljs-function"><span class="hljs-params">(passed)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> passed == <span class="hljs-literal">true</span>
+            _this.source.insert(_this.key, _this.doc).<span class="hljs-keyword">then</span>( 
+              <span class="hljs-function"><span class="hljs-params">(d)</span> -&gt;</span> _this._mask_or_data(d, mask)
+            ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
+                _this.after_save(d)
+              ).bind(_this) 
+            ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
+                _this.after_create(d)
+              ).bind(_this) 
+            ) 
+          <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">if</span> passed <span class="hljs-keyword">instanceof</span> Error
+              passed
+            <span class="hljs-keyword">else</span>
+              Boom.notAcceptable <span class="hljs-string">"Validation failed"</span>
+      )</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method update([mask])</span></p>
 <h2 id="update">Update</h2>
-<p>Update the existing doc in assigned key. It can return masked doc after saving.</p>
+<p>Update an existing doc using its key. It can return masked doc after saving and works in 2 different way:</p>
+<h3 id="get-the-document-and-update-it">Get the document and update it</h3>
+<p>You can get the document which means you have access to <code>.doc</code> property in the ODME object and all your pre-update callbacks can use the <code>.doc</code>. Once you are done with the ODME object you can call update and it will replace you <code>.doc</code> with the version in Data Storage.</p>
+<pre><code>  Recipe.get(&quot;recipe_xhygd12gH3&quot;).then (recipe) -&gt;
+    recipe.doc.name = &#39;Pasta&#39;
+    recipe.update()</code></pre>
+<h3 id="update-a-document-using-a-new-odme-object">Update a document using a new ODME object</h3>
+<p>You instantiate a new ODME object with the key of previously stored docuemnt and assign your proeprties to its <code>.doc</code>. When <code>.update()</code> method is called, it will replace get the old doc internally and merge your new properties into it.</p>
+<pre><code>  recipe = new Recipe &quot;recipe_xhygd12gH3&quot;, { name: &#39;Pasta&#39; }
+  recipe.update()</code></pre>
+<p><strong>Note:</strong> Remember update works synchronously, therefore if you want to do some actions after it you should define them in <code>.then</code>.</p>
+<p>Same as <code>create</code> method we have <code>before_update</code>, <code>before_save</code>, <code>after_save</code> and <code>after_update</code> callbacks hooked to update.</p>
 <p>Parameters:</p>
 <ul>
-<li><strong>mask can be a string, an array, or a true.</strong><br/>(this works exactly same way mask(mask) method works)</li>
+<li><strong>mask can be a string, an array, or a true.</strong><br/>(this works same as mask(mask) method.)</li>
 </ul>
 <p>Example:</p>
 <pre><code>recipe = new Recipe &quot;recipe_xhygd12gH3&quot;, { name: &#39;Anti Pasta&#39; }
 recipe.update(true).then (d) -&gt; console.log d</code></pre></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">update</span>: <span class="hljs-function"><span class="hljs-params">(mask)</span>-&gt;</span>
     _this = @
-    <span class="hljs-property">@source</span>.update(<span class="hljs-property">@key</span>, <span class="hljs-property">@doc</span>).<span class="hljs-keyword">then</span>( 
-      <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> 
-        <span class="hljs-keyword">return</span> data <span class="hljs-keyword">if</span> data.isBoom || ! mask?
-        _this.source.get(_this.key, <span class="hljs-literal">true</span>).<span class="hljs-keyword">then</span> (d) -&gt;
-          _this.doc = d
-          _this._mask_or_data(d, mask)
-    ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
-      _this.after_save(d)
-      ).bind(_this)
-    )</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method remove(key)</span></p>
+    <span class="hljs-property">@Q</span>.invoke( @, <span class="hljs-string">'before_update'</span> ).<span class="hljs-keyword">then</span>(
+      <span class="hljs-function"><span class="hljs-params">(passed)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> passed == <span class="hljs-literal">true</span>
+          _this.Q.invoke( _this, <span class="hljs-string">'before_save'</span> )
+        <span class="hljs-keyword">else</span>
+          passed
+      ).<span class="hljs-keyword">then</span>(
+        <span class="hljs-function"><span class="hljs-params">(passed)</span> =&gt;</span>
+          <span class="hljs-keyword">if</span> passed == <span class="hljs-literal">true</span>
+            update = <span class="hljs-keyword">if</span> _this.is_new
+              <span class="hljs-property">@source</span>.update <span class="hljs-property">@key</span>, <span class="hljs-property">@doc</span>
+            <span class="hljs-keyword">else</span>
+              <span class="hljs-property">@source</span>.replace <span class="hljs-property">@key</span>, <span class="hljs-property">@doc</span>, { <span class="hljs-attribute">cas</span>: <span class="hljs-property">@cas</span> }
+            update.<span class="hljs-keyword">then</span>( 
+              <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> 
+                <span class="hljs-keyword">return</span> data <span class="hljs-keyword">if</span> data.isBoom || ! mask?
+                _this.source.get(_this.key, <span class="hljs-literal">true</span>).<span class="hljs-keyword">then</span> (d) -&gt;
+                  _this.doc = d
+                  _this._mask_or_data(d, mask)
+            ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
+              _this.after_save(d)
+              ).bind(_this)
+            ).<span class="hljs-keyword">then</span>( <span class="hljs-function">(<span class="hljs-params">(d)</span> -&gt;</span> 
+                _this.after_update(d)
+              ).bind(_this) 
+            )
+          <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">if</span> passed <span class="hljs-keyword">instanceof</span> Error
+              passed
+            <span class="hljs-keyword">else</span>
+              Boom.notAcceptable <span class="hljs-string">"Validation failed"</span>
+      )</div></div></div><div class="segment"><div class="comments doc-section doc-section-public"><div class="wrapper"><p><span class='doc-section-header'>Public method remove(key)</span></p>
 <h2 id="delete">Delete</h2>
-<p>Delete the existing doc by key. It return true or the error</p>
+<p>Delete the existing doc by key. It return true or the error object</p>
 <p>Parameters:</p>
 <ul>
 <li><strong>key must be a string.</strong><br/>(document key which should be removed)</li>
@@ -128,9 +177,15 @@ recipe.update(true).then (d) -&gt; console.log d</code></pre></div></div><div cl
     @::source.remove(key).<span class="hljs-keyword">then</span> (d)-&gt;
       <span class="hljs-keyword">return</span> d <span class="hljs-keyword">if</span> d.isBoom
       <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="after-save-callback">After Save Callback</h2>
-<p>You can after save callback in your models. If you want the data being passed in promises chain after calling <strong>after_save</strong> make sure you are returning it</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">after_save</span>: <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> <span class="hljs-keyword">return</span> data
+  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="before-update-callback">Before update Callback</h2>
+<p>Before Update can be used to assign values or as validation. It should return true to update the doc. If it returns false, ODME will return Boom Error. If you want to have your own error message make sure you are returning a Boom Error object at the end of this method on failures.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">before_update</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
   </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="before-create-callback">Before create Callback</h2>
-<p>Before Create hook to assign values or be used as validation. It should return true or false to determine if doc will get saved.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">before_create</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+<p>Before Create can be used to assign values or as validation. It should return true to create the doc. If it returns false, ODME will return Boom Error. If you want to have your own error message make sure you are returning a Boom Error object at the end of this method on failures.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">before_create</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+   </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="before-save-callback">Before save Callback</h2>
+<p>Before Save can be used to assign values or as validation. It should return true to create/update the doc. If it returns false, ODME will return Boom Error. If you want to have your own error message make sure you are returning a Boom Error object at the end of this method on failures.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">before_save</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
   </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="after-create-callback">After Create Callback</h2>
-<p>After create hook to do extra processing on the result. If you want the data being passed in promises chain after calling <strong>after_create</strong> make sure you are returning it</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">after_create</span>: <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> <span class="hljs-keyword">return</span> data</div></div></div></div></body></html>
+<p>After create hook to do extra processing on the result. If you want the data being passed in promises chain after calling <strong>after_create</strong> make sure you are returning it. <code>after_create</code> callback will be called before this.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">after_create</span>: <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> <span class="hljs-keyword">return</span> data
+  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="after-update-callback">After Update Callback</h2>
+<p>Override after update callback in your models. If you want the data being passed in promises chain after calling <strong>after_update</strong> make sure you are returning it. This will be called only after update.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">after_update</span>: <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> <span class="hljs-keyword">return</span> data
+  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="after-save-callback">After Save Callback</h2>
+<p>Override save callback in your models. If you want the data being passed in promises chain after calling <strong>after_save</strong> make sure you are returning it. This will be called after create and update.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-attribute">after_save</span>: <span class="hljs-function"><span class="hljs-params">(data)</span> -&gt;</span> <span class="hljs-keyword">return</span> data</div></div></div></div></body></html>

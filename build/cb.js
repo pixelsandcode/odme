@@ -21,12 +21,13 @@
       make = function(k, d) {
         var instance;
         instance = new _this(k, d);
-        instance.doc = d;
+        instance.doc = d.value;
+        instance.cas = d.cas;
         instance.key = k;
         instance.is_new = false;
         return instance;
       };
-      return this.prototype.source.get(key, !raw).then(function(d) {
+      return this.prototype.source.get(key).then(function(d) {
         var i, j, len, list;
         if (d.isBoom || raw) {
           return d;
@@ -93,7 +94,13 @@
       var _this;
       _this = this;
       return this.Q.invoke(this, 'before_create').then(function(passed) {
-        if (passed) {
+        if (passed === true) {
+          return _this.Q.invoke(_this, 'before_save');
+        } else {
+          return passed;
+        }
+      }).then(function(passed) {
+        if (passed === true) {
           return _this.source.insert(_this.key, _this.doc).then(function(d) {
             return _this._mask_or_data(d, mask);
           }).then((function(d) {
@@ -102,7 +109,11 @@
             return _this.after_create(d);
           }).bind(_this));
         } else {
-          return Boom.notAcceptable("Validation failed");
+          if (passed instanceof Error) {
+            return passed;
+          } else {
+            return Boom.notAcceptable("Validation failed");
+          }
         }
       });
     };
@@ -110,17 +121,41 @@
     CB.prototype.update = function(mask) {
       var _this;
       _this = this;
-      return this.source.update(this.key, this.doc).then(function(data) {
-        if (data.isBoom || (mask == null)) {
-          return data;
+      return this.Q.invoke(this, 'before_update').then(function(passed) {
+        if (passed === true) {
+          return _this.Q.invoke(_this, 'before_save');
+        } else {
+          return passed;
         }
-        return _this.source.get(_this.key, true).then(function(d) {
-          _this.doc = d;
-          return _this._mask_or_data(d, mask);
-        });
-      }).then((function(d) {
-        return _this.after_save(d);
-      }).bind(_this));
+      }).then((function(_this) {
+        return function(passed) {
+          var update;
+          if (passed === true) {
+            update = _this.is_new ? _this.source.update(_this.key, _this.doc) : _this.source.replace(_this.key, _this.doc, {
+              cas: _this.cas
+            });
+            return update.then(function(data) {
+              if (data.isBoom || (mask == null)) {
+                return data;
+              }
+              return _this.source.get(_this.key, true).then(function(d) {
+                _this.doc = d;
+                return _this._mask_or_data(d, mask);
+              });
+            }).then((function(d) {
+              return _this.after_save(d);
+            }).bind(_this)).then((function(d) {
+              return _this.after_update(d);
+            }).bind(_this));
+          } else {
+            if (passed instanceof Error) {
+              return passed;
+            } else {
+              return Boom.notAcceptable("Validation failed");
+            }
+          }
+        };
+      })(this));
     };
 
     CB.remove = function(key) {
@@ -132,15 +167,27 @@
       });
     };
 
-    CB.prototype.after_save = function(data) {
-      return data;
+    CB.prototype.before_update = function() {
+      return true;
     };
 
     CB.prototype.before_create = function() {
       return true;
     };
 
+    CB.prototype.before_save = function() {
+      return true;
+    };
+
     CB.prototype.after_create = function(data) {
+      return data;
+    };
+
+    CB.prototype.after_update = function(data) {
+      return data;
+    };
+
+    CB.prototype.after_save = function(data) {
       return data;
     };
 

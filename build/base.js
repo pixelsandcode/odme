@@ -42,18 +42,18 @@
       }
       switch (arguments.length) {
         case 0:
-          this.doc = null;
+          this.doc = {};
           this.key = this._key();
           break;
         case 1:
-          this.doc = this.key || null;
+          this.doc = this.key || {};
           this.key = this._key();
           all = false;
           break;
         case 2:
           if (typeof this.doc === 'boolean') {
             all = this.doc;
-            this.doc = this.key || null;
+            this.doc = this.key || {};
             this.key = this._key();
           }
           break;
