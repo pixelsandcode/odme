@@ -17,79 +17,9 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "projectPath": "README.md",
         "targetPath": "index",
         "pageTitle": "index",
-        "firstHeader": {
-          "type": "heading",
-          "data": {
-            "level": 1,
-            "title": "odme",
-            "slug": "odme",
-            "isFileHeader": true
-          },
-          "depth": 1,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "How to use",
-                "slug": "how-to-use"
-              },
-              "depth": 2
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "How to read this doc?",
-                "slug": "how-to-read-this-doc"
-              },
-              "depth": 2,
-              "children": [
-                {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "Need more?",
-                    "slug": "need-more"
-                  },
-                  "depth": 3
-                }
-              ]
-            }
-          ]
-        },
-        "title": "odme"
+        "title": "index"
       },
-      "depth": 1,
-      "outline": [
-        {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "How to use",
-            "slug": "how-to-use"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "How to read this doc?",
-            "slug": "how-to-read-this-doc"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Need more?",
-                "slug": "need-more"
-              },
-              "depth": 3
-            }
-          ]
-        }
-      ]
+      "depth": 1
     }, {
       "type": "file",
       "data": {
@@ -159,7 +89,42 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "title": "Model Constructor",
             "slug": "model-constructor"
           },
-          "depth": 2
+          "depth": 2,
+          "children": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Blank document object with new key",
+                "slug": "blank-document-object-with-new-key"
+              },
+              "depth": 3
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Document object with new key",
+                "slug": "document-object-with-new-key"
+              },
+              "depth": 3
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Blank document object with a key",
+                "slug": "blank-document-object-with-a-key"
+              },
+              "depth": 3
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Property Filtering",
+                "slug": "property-filtering"
+              },
+              "depth": 3
+            }
+          ]
         }, {
           "type": "heading",
           "data": {
@@ -236,8 +201,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Save",
-            "slug": "save"
+            "title": "Create",
+            "slug": "create"
           },
           "depth": 2
         }, {
@@ -247,7 +212,26 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "title": "Update",
             "slug": "update"
           },
-          "depth": 2
+          "depth": 2,
+          "children": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Get the document and update it",
+                "slug": "get-the-document-and-update-it"
+              },
+              "depth": 3
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 3,
+                "title": "Update a document using a new ODME object",
+                "slug": "update-a-document-using-a-new-odme-object"
+              },
+              "depth": 3
+            }
+          ]
         }, {
           "type": "heading",
           "data": {
@@ -260,8 +244,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "After Save Callback",
-            "slug": "after-save-callback"
+            "title": "Before update Callback",
+            "slug": "before-update-callback"
           },
           "depth": 2
         }, {
@@ -276,8 +260,32 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
+            "title": "Before save Callback",
+            "slug": "before-save-callback"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
             "title": "After Create Callback",
             "slug": "after-create-callback"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "After Update Callback",
+            "slug": "after-update-callback"
+          },
+          "depth": 2
+        }, {
+          "type": "heading",
+          "data": {
+            "level": 2,
+            "title": "After Save Callback",
+            "slug": "after-save-callback"
           },
           "depth": 2
         }
@@ -302,8 +310,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "pageTitle": "main",
         "title": "main"
       },
-      "depth": 1,
-      "outline": []
+      "depth": 1
     }
   ];
 
