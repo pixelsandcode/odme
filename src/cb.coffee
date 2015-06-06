@@ -145,7 +145,7 @@ module.exports = class CB extends Base
   # 
   # ### Get the document and update it
   # 
-  # You can get the document which means you have access to `.doc` property in the ODME object and all your pre-update callbacks can use the `.doc`. Once you are done with the ODME object you can call update and it will replace you `.doc` with the version in Data Storage.
+  # You can get the document which means you have access to `.doc` property in the ODME object and all your pre-update callbacks can use the `.doc`. Once you are done with the ODME object you can call update and it will replace your `.doc` with the version in Data Storage.
   # 
   # ```
   #   Recipe.get("recipe_xhygd12gH3").then (recipe) ->
@@ -163,7 +163,7 @@ module.exports = class CB extends Base
   #     
   # ```
   # 
-  # **Note:** Remember update works synchronously, therefore if you want to do some actions after it you should define them in `.then`.
+  # **Note:** Remember update works asynchronously, therefore if you want to do some actions after it you should define them in `.then`.
   # 
   # Same as `create` method we have `before_update`, `before_save`, `after_save` and `after_update` callbacks hooked to update.
   # 

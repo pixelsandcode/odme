@@ -40,7 +40,7 @@ module.exports = class Model
   
   # ## Document type
   # 
-  # Each document has a type which you can define by setting the `doc_type` property. This type will be saved in document automatically. If you do not set it, it will be same asclass name.
+  # Each document has a type which you can define by setting the `doc_type` property. This type will be saved in document automatically. If you do not set it, it will be same as class name.
   # 
   doc_type: null
 
@@ -90,7 +90,7 @@ module.exports = class Model
   #   new Model 'key', { prop: value }, true
   # ```
   #
-  # ODME object stores document in `.doc` and generated/assgined key in `.key` properties. When the ODME object is new, it sets the `.is_new` to true. This `.is_new` property can be used to determine if the document is already stored in Data Storage (If you are implementing your own adapter, read CB adapter first.).
+  # ODME object stores document in `.doc` and generates and assgins key in `.key` properties. When the ODME object is new, it sets the `.is_new` to true. This `.is_new` property can be used to determine if the document is already stored in Data Storage (If you are implementing your own adapter, read CB adapter first.).
   #
   # ### Blank document object with new key
   # 
@@ -225,7 +225,6 @@ module.exports = class Model
   # 
   # @param {string}           mask   it is the masker and if it's not provided it will return default class global_mask.
   #
-  # @examples
   @mask: (doc, mask) ->
     if ! mask?
       mask = @::global_mask || (
