@@ -116,7 +116,7 @@ recipe.create(true).then (d) -&gt; console.log d</code></pre></div></div><div cl
 <h2 id="update">Update</h2>
 <p>Update an existing doc using its key. It can return masked doc after saving and works in 2 different way:</p>
 <h3 id="get-the-document-and-update-it">Get the document and update it</h3>
-<p>You can get the document which means you have access to <code>.doc</code> property in the ODME object and all your pre-update callbacks can use the <code>.doc</code>. Once you are done with the ODME object you can call update and it will replace you <code>.doc</code> with the version in Data Storage.</p>
+<p>You can get the document which means you have access to <code>.doc</code> property in the ODME object and all your pre-update callbacks can use the <code>.doc</code>. Once you are done with the ODME object you can call update and it will replace your <code>.doc</code> with the version in Data Storage.</p>
 <pre><code>  Recipe.get(&quot;recipe_xhygd12gH3&quot;).then (recipe) -&gt;
     recipe.doc.name = &#39;Pasta&#39;
     recipe.update()</code></pre>
@@ -124,7 +124,7 @@ recipe.create(true).then (d) -&gt; console.log d</code></pre></div></div><div cl
 <p>You instantiate a new ODME object with the key of previously stored docuemnt and assign your proeprties to its <code>.doc</code>. When <code>.update()</code> method is called, it will replace get the old doc internally and merge your new properties into it.</p>
 <pre><code>  recipe = new Recipe &quot;recipe_xhygd12gH3&quot;, { name: &#39;Pasta&#39; }
   recipe.update()</code></pre>
-<p><strong>Note:</strong> Remember update works synchronously, therefore if you want to do some actions after it you should define them in <code>.then</code>.</p>
+<p><strong>Note:</strong> Remember update works asynchronously, therefore if you want to do some actions after it you should define them in <code>.then</code>.</p>
 <p>Same as <code>create</code> method we have <code>before_update</code>, <code>before_save</code>, <code>after_save</code> and <code>after_update</code> callbacks hooked to update.</p>
 <p>Parameters:</p>
 <ul>
