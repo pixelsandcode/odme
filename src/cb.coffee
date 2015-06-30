@@ -1,5 +1,7 @@
 Base = require './base'
 Boom = require 'boom'
+_    = require 'lodash'
+Q    = require 'q'
 
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
 # 
@@ -23,6 +25,7 @@ module.exports = class CB extends Base
   #   recipe.get('recipe_uX87dkF3Bj').then (d) -> console.log d
   # 
   @get: (key, raw)->
+    return Q( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
     _this = @
     raw ||= false
     make = (k, d) ->
@@ -56,6 +59,7 @@ module.exports = class CB extends Base
   #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
   # 
   @find: (key, raw, as_object)->
+    return Q( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
     _this = @
     @::source.get(key, true).then (d)->
       return d if d.isBoom || (raw? && raw == true)

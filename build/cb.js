@@ -1,11 +1,15 @@
 (function() {
-  var Base, Boom, CB,
+  var Base, Boom, CB, Q, _,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   Base = require('./base');
 
   Boom = require('boom');
+
+  _ = require('lodash');
+
+  Q = require('q');
 
   module.exports = CB = (function(superClass) {
     extend(CB, superClass);
@@ -16,6 +20,9 @@
 
     CB.get = function(key, raw) {
       var _this, make;
+      if (_.isEmpty(key || _.isNaN(key))) {
+        return Q(_.isArray(key) ? [] : null);
+      }
       _this = this;
       raw || (raw = false);
       make = function(k, d) {
@@ -46,6 +53,9 @@
 
     CB.find = function(key, raw, as_object) {
       var _this;
+      if (_.isEmpty(key || _.isNaN(key))) {
+        return Q(_.isArray(key) ? [] : null);
+      }
       _this = this;
       return this.prototype.source.get(key, true).then(function(d) {
         var i, j, l, len, len1, list, mask, o;

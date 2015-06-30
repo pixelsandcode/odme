@@ -304,6 +304,30 @@ describe 'CB', ->
         ).done()
     )
 
+  it "should return empty array on find or get for empty array",  ->
+    Recipe.find([]).then (d) ->
+      d.should.be.eql []
+      Recipe.get([]).then (d) ->
+        d.should.be.eql []
+
+  it "should return empty null on find or get for null",  ->
+    Recipe.find(null).then (d) ->
+      should.equal d, null
+      Recipe.get(null).then (d) ->
+        should.equal d, null
+
+  it "should return empty null on find or get for undefined",  ->
+    Recipe.find(undefined).then (d) ->
+      should.equal d, null
+      Recipe.get(undefined).then (d) ->
+        should.equal d, null
+
+  it "should return empty null on find or get for false",  ->
+    Recipe.find(false).then (d) ->
+      should.equal d, null
+      Recipe.get(false).then (d) ->
+        should.equal d, null
+
   it "should fail on before_create returning false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.views = 10000
