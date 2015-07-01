@@ -37,11 +37,11 @@ module.exports = class CB extends Base
       instance
     @::source.get(key).then (d)->
       return d if d.isBoom || raw
-      if d not instanceof Array
+      if key not instanceof Array
         return make( key, d )
       list = []
-      for i in d
-        list.push make( i.doc_key, i )
+      for i in key
+        list.push make( i, d[i] )
       list
  
   # ## Find
@@ -65,7 +65,7 @@ module.exports = class CB extends Base
       return d if d.isBoom || (raw? && raw == true)
       mask = (_this::_mask||null)
       mask = raw if typeof raw == 'string'
-      if d not instanceof Array
+      if key not instanceof Array
         if as_object? and as_object
           (o = {})[d.doc_key] = _this.mask d, mask
           return o

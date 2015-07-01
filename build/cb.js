@@ -39,13 +39,13 @@
         if (d.isBoom || raw) {
           return d;
         }
-        if (!(d instanceof Array)) {
+        if (!(key instanceof Array)) {
           return make(key, d);
         }
         list = [];
-        for (j = 0, len = d.length; j < len; j++) {
-          i = d[j];
-          list.push(make(i.doc_key, i));
+        for (j = 0, len = key.length; j < len; j++) {
+          i = key[j];
+          list.push(make(i, d[i]));
         }
         return list;
       });
@@ -66,7 +66,7 @@
         if (typeof raw === 'string') {
           mask = raw;
         }
-        if (!(d instanceof Array)) {
+        if (!(key instanceof Array)) {
           if ((as_object != null) && as_object) {
             (o = {})[d.doc_key] = _this.mask(d, mask);
             return o;
