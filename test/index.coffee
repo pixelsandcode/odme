@@ -1,12 +1,12 @@
 should  = require('chai').should()
 Base   = require('../build/main').Base
-User    = require('./user')
-Recipe    = require('./recipe')
-
+User    = require './user'
+Recipe    = require './recipe'
+ReadOnly = require './readonly'
 describe 'Base', ->
   
   it 'should create a class even if passed from a method', ->
-    BaseFactory = (()->
+    BaseFactory = ( ->
                 return Base
             )()
     class Book extends BaseFactory
@@ -25,7 +25,7 @@ describe 'Base', ->
     user.source.should.equal 'CB'
 
     class Book extends Base
-      constructor: () ->
+      constructor: ->
         @source.should.equal 'CB'
     
     Book::source.should.equal 'CB'
@@ -103,6 +103,9 @@ describe 'Base', ->
     user2 = new User { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }, true
     user2.doc.should.eql { name: 'Arash', age: 31, total_logins: 10, last_login: 'today', doc_type: 'user', doc_key: user2.key }
 
+  it "should prevent bulk assignment if all attributes are marked as false", ->
+    user = new ReadOnly name: 'Arash', not_allowed: 'value'
+    user.doc.should.not.have.any.keys ['name', 'not_allowed']
   it "should have two independent masks as setter and getter", ->
     class Book extends Base
       props: {
