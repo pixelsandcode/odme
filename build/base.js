@@ -66,6 +66,11 @@
       if ((this.doc != null) && !all) {
         this.doc = JsonMask(this.doc, this.setter_mask) || {};
       }
+      if (!(all === true || _.any(this.props, function(p) {
+        return p === true;
+      }))) {
+        this.doc = {};
+      }
       if (this.doc != null) {
         this.doc.doc_type = this.doc_type;
         this.doc.doc_key = this.key;

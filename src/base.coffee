@@ -142,7 +142,7 @@ module.exports = class Model
       when 0
         @doc = {}
         @key = @_key()
-      when 1 
+      when 1
         @doc = @key || {}
         @key = @_key()
         all = false
@@ -155,8 +155,9 @@ module.exports = class Model
         all ||= false
     @key = "#{@key}" if @key?
     @doc = JsonMask(@doc, @setter_mask) || {} if @doc? && ! all
+    @doc = {} unless  all is true or _.any @props, (p) -> p is true
     if @doc?
-      @doc.doc_type = @doc_type 
+      @doc.doc_type = @doc_type
       @doc.doc_key = @key
 
   # ## Default key generator for doc
