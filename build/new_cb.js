@@ -104,7 +104,7 @@
     };
 
     CB.prototype.create = function(mask) {
-      return this.lifeCycle(mask, "Create", (function(_this) {
+      return this.lifeCycle(mask, "create", (function(_this) {
         return function() {
           return _this.source.insert(_this.key, _this.doc);
         };
@@ -113,10 +113,10 @@
 
     CB.prototype.lifeCycle = function(mask, type, fn) {
       var after, afterSave, before, beforeSave;
-      before = Promise.method(this["before" + type].bind(this));
+      before = Promise.method(this["before_" + type].bind(this));
       beforeSave = Promise.method(this.beforeSave.bind(this));
       afterSave = Promise.method(this.afterSave.bind(this));
-      after = Promise.method(this["after" + type].bind(this));
+      after = Promise.method(this["after_" + type].bind(this));
       return before().then((function(_this) {
         return function(passed) {
           if (passed) {
@@ -154,7 +154,7 @@
     };
 
     CB.prototype.update = function(mask) {
-      return this.lifeCycle(mask, "Update", (function(_this) {
+      return this.lifeCycle(mask, "update", (function(_this) {
         return function(mask) {
           var update;
           update = _this.is_new ? _this.source.update(_this.key, _this.doc) : _this.source.replace(_this.key, _this.doc, {

@@ -22,29 +22,29 @@ module.exports = class Recipe extends Base
     super
     @doc.maximum_likes = 100
   
-  before_save: ->
+  beforeSave: ->
     if !@can_save? || @can_save
       true
     else
       Boom.notAcceptable "Custom Boom"
       
 
-  before_update: ->
+  beforeUpdate: ->
     !@doc.is_locked
 
-  before_create: ->
+  beforeCreate: ->
     !(@doc.views? && @doc.views>1000)
 
-  after_save: (data) ->
+  afterSave: (data) ->
     @doc.hits = 1
     data
 
-  after_create: (data) ->
+  afterCreate: (data) ->
     @doc.total_hits = 10
     data.inc_hit = 2
     data
 
-  after_update: (data) ->
+  afterUpdate: (data) ->
     @doc.hits += 10
     data
 
