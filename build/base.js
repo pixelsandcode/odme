@@ -30,7 +30,7 @@
       if (this.doc_type == null) {
         this.doc_type = this.constructor.name.toLowerCase();
       }
-      this._keys = _.keys(_.pick(this.props, function(i) {
+      this._keys = _.keys(_.pickBy(this.props, function(i) {
         return i;
       }));
       this.setter_mask = this._keys.join(',');
@@ -89,7 +89,7 @@
     Model.mask = function(doc, mask) {
       var keys;
       if (mask == null) {
-        mask = this.prototype.global_mask || (keys = _.keys(_.pick(this.prototype.props, function(i) {
+        mask = this.prototype.global_mask || (keys = _.keys(_.pickBy(this.prototype.props, function(i) {
           return i;
         })), this.prototype.global_mask = keys.join(','), this.prototype.global_mask !== '' ? this.prototype.global_mask += ',doc_type,doc_key' : void 0, this.prototype.global_mask);
       }

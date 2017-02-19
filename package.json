@@ -15,21 +15,21 @@
   ],
   "devDependencies": {
     "blanket": "^1.1.6",
-    "chai": "^1.10.0",
+    "chai": "^3.5.0",
     "coffee-script": "^1.9.0",
     "coveralls": "^2.11.2",
     "groc": "^0.8.0",
     "gulp": "^3.8.10",
     "gulp-coffee": "^2.2.0",
-    "mocha": "^2.1.0",
-    "mocha-lcov-reporter": "0.0.1",
+    "mocha": "^3.2.0",
+    "mocha-lcov-reporter": "1.2.0",
     "puffer": "^1.0.1"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
-    "boom": "^2.6.1",
-    "json-mask": "^0.3.3",
-    "lodash": "^3.2.0",
+    "boom": "^4.2.0",
+    "json-mask": "^0.3.8",
+    "lodash": "^4.17.4",
     "q": "^1.1.2",
     "shortid": "^2.1.3"
   },
