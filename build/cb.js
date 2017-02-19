@@ -27,28 +27,28 @@
       }
       raw || (raw = false);
       make = (function(_this) {
-        return function(k, d) {
+        return function(key, document) {
           var instance;
-          instance = new _this(k, d);
-          instance.doc = d.value;
-          instance.cas = d.cas;
-          instance.key = k;
+          instance = new _this(document, key);
+          instance.doc = document.value;
+          instance.cas = document.cas;
+          instance.key = key;
           instance.is_new = false;
           return instance;
         };
       })(this);
-      return this.prototype.source.get(key).then(function(d) {
+      return this.prototype.source.get(key).then(function(document) {
         var i, j, len, list;
-        if (d.isBoom || raw) {
-          return d;
+        if (document.isBoom || raw) {
+          return document;
         }
         if (!(key instanceof Array)) {
-          return make(key, d);
+          return make(key, document);
         }
         list = [];
         for (j = 0, len = key.length; j < len; j++) {
           i = key[j];
-          list.push(make(i, d[i]));
+          list.push(make(i, document[i]));
         }
         return list;
       });
@@ -60,7 +60,7 @@
       }
       return this.prototype.source.get(key, true).then((function(_this) {
         return function(d) {
-          var i, j, l, len, len1, list, mask, o;
+          var i, j, k, len, len1, list, mask, o;
           if (d.isBoom || ((raw != null) && raw === true)) {
             return d;
           }
@@ -84,8 +84,8 @@
               }
             } else {
               list = [];
-              for (l = 0, len1 = d.length; l < len1; l++) {
-                i = d[l];
+              for (k = 0, len1 = d.length; k < len1; k++) {
+                i = d[k];
                 list.push(_this.mask(i, mask));
               }
             }
@@ -95,7 +95,7 @@
       })(this));
     };
 
-    CB.prototype._mask_or_data = function(data, mask) {
+    CB.prototype.maskOrData = function(data, mask) {
       if (data.isBoom || (mask == null)) {
         return data;
       } else {
@@ -134,7 +134,7 @@
         };
       })(this)).then((function(_this) {
         return function(data) {
-          return _this._mask_or_data(data, mask);
+          return _this.maskOrData(data, mask);
         };
       })(this)).then((function(_this) {
         return function(data) {
@@ -174,9 +174,9 @@
     };
 
     CB.remove = function(key) {
-      return this.prototype.source.remove(key).then(function(d) {
-        if (d.isBoom) {
-          return d;
+      return this.prototype.source.remove(key).then(function(data) {
+        if (data.isBoom) {
+          return data;
         }
         return true;
       });

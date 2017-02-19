@@ -28,6 +28,7 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "boom": "^4.2.0",
+    "joi": "^10.2.2",
     "json-mask": "^0.3.8",
     "lodash": "^4.17.4",
     "q": "^1.1.2",

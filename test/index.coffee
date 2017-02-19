@@ -1,7 +1,10 @@
 should  = require('chai').should()
+chai = require('chai')
 Base   = require('../build/main').Base
 User    = require('./user')
 Recipe    = require('./recipe')
+Wrong = require('./wrong')
+BaseBook = require('./book')
 
 describe 'Base', ->
 
@@ -48,6 +51,12 @@ describe 'Base', ->
     user2 = new User
     user2.source.should.equal 'MySQL'
 
+  it "should return an error for invalid prop", ->
+    chai.expect(() -> new Wrong).to.throw()
+
+  it "should return an error for invalid doc", ->
+    chai.expect(() -> new User {name: 1, age: "hello"}).to.throw()
+
   it "should have {} @doc and default @key on creation", ->
     user = new User
     user.should.have.property('key').that.not.equal null
@@ -55,23 +64,14 @@ describe 'Base', ->
     arash = new User { name: 'Arash' }
     arash.should.have.property('key').that.not.equal null
     arash.should.have.property('doc').that.have.property('name').that.equal 'Arash'
-    jack = new User 'u_XYZ', { name: 'Jack' }
+    jack = new User { name: 'Jack' }, 'u_XYZ'
     jack.should.have.property('key').that.equal 'u_XYZ'
     jack.should.have.property('doc').that.have.property('name').that.equal 'Jack'
 
   it "should get a prefix as class name automatically", ->
-    class Book extends Base
-    book = new Book {}
+    book = new BaseBook {}
     book.should.have.property('PREFIX').that.equal 'book'
     book.key.should.string "book"
-
-  it "should have no prefix if set to false", ->
-    class Book extends Base
-      PREFIX: false
-
-    book = new Book 100, {}
-    book.should.have.property('PREFIX').that.equal false
-    book.key.should.equal "100"
 
   it "should have prefix set before hand", ->
     user = new User {}
@@ -85,7 +85,7 @@ describe 'Base', ->
     user = new User { name: 'Arash' }
     user.should.have.property('doc_type').that.equal 'user'
 
-    class Book extends Base
+    class Book extends BaseBook
       doc_type: 'notebook'
 
     book = new Book
@@ -94,24 +94,18 @@ describe 'Base', ->
   it "should let inherited classes to have their own ID generator", ->
     user = new User { name: 'Arash' }
     user.key.should.equal "u_fixedID"
-    base = new Base { name: 'Arash' }
+    base = new BaseBook { name: 'Arash' }
     base.key.should.not.equal "u_fixedID"
 
-  it "should alow bulk assignment for allowed attributes", ->
-    user = new User { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }
-    user.doc.should.eql { name: 'Arash', age: 31, doc_type: 'user', doc_key: user.key }
-    user2 = new User { name: 'Arash', age: 31, total_logins: 10, last_login: 'today' }, true
-    user2.doc.should.eql { name: 'Arash', age: 31, total_logins: 10, last_login: 'today', doc_type: 'user', doc_key: user2.key }
+  it "should throw error key is not a string", ->
+    chai.expect(() -> new User { name: 'Arash', age: 31}, yes).to.throw()
 
   it "should have two independent masks as setter and getter", ->
-    class Book extends Base
-      props: {
-        name: true
-      }
+    class Book extends BaseBook
       _mask: 'name,pages'
 
     book = new Book { name: 'NodeJS ODM', pages: 100 }
-    book.doc.should.eql { name: 'NodeJS ODM', doc_type: 'book', doc_key: book.key }
+    book.doc.should.eql { name: 'NodeJS ODM', doc_type: 'book', doc_key: book.key, pages: 100 }
     book.doc.pages = 150
     book.doc.price = '$50'
     book.mask().should.eql { name: 'NodeJS ODM', pages: 150 }
@@ -126,7 +120,7 @@ describe 'Base', ->
 
   it "should have static getters mask", ->
     User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', doc_type: 'user', doc_key: '123' }).should.eql { name: 'Jack', age: 31, doc_type: 'user', doc_key: '123' }
-    User::global_mask.should.be.equal 'name,age,city,country,doc_type,doc_key'
+    User::global_mask.should.be.equal 'name,age,city,country,popularity,total_logins,doc_type,doc_key'
     User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, doc_key: '123' }).should.eql { name: 'Jack', age: 31, doc_key: '123' }
 
   it "should override key generation method", ->
@@ -168,7 +162,7 @@ describe 'CB', ->
         d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
         recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1 }
         recipe.mask(true).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1, doc_type: 'recipe', maximum_likes: 100, total_hits: 10 }
-        updater = new Recipe recipe.key, { name: 'Anti Pasta' }
+        updater = new Recipe { name: 'Anti Pasta' }, recipe.key
         updater.update([]).then(
           (u) ->
             u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
@@ -182,7 +176,7 @@ describe 'CB', ->
 
     recipe2.create([]).then(
       (d) ->
-        updater = new Recipe recipe2.key, { name: 'Pasta Bolognese' }
+        updater = new Recipe { name: 'Pasta Bolognese' }, recipe2.key
         updater.update(true).then(
           (u) ->
             u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe2.key, doc_type: 'recipe', maximum_likes: 100 }
@@ -193,7 +187,7 @@ describe 'CB', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.create([]).then(
       (d) ->
-        updater = Recipe.get(recipe.key).then (obj) ->
+        updated = Recipe.get(recipe.key).then (obj) ->
           obj.doc.name = 'Anti Pasta'
           obj.update([]).then(
             (doc) ->
@@ -205,7 +199,7 @@ describe 'CB', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.create([]).then(
       (d) ->
-        updater = new Recipe recipe.key, {}
+        updater = new Recipe {}, recipe.key
         updater.update([]).then(
           (doc) ->
             updater.doc.hits.should.eql 11
@@ -269,7 +263,7 @@ describe 'CB', ->
           Recipe.get([recipe.key, recipe2.key], true).then( (d) ->
             d.should.be.an.instanceof Object
             d[recipe.key].should.have.property 'cas'
-            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe' }
+            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe', popularity: 100 }
           )
         )
     )
@@ -291,7 +285,7 @@ describe 'CB', ->
             Recipe.find([recipe.key, recipe2.key], true)
               .then (d) ->
                 d.should.be.an.instanceof Array
-                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe' }
+                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe', popularity: 100 }
                 Recipe.find([recipe.key, recipe2.key], false, true)
                   .then (d) ->
                     d.should.be.an.instanceof Object
@@ -342,7 +336,7 @@ describe 'CB', ->
   it "should fail on before_update returning false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.create().then (d) ->
-      updater = new Recipe recipe.key, { name: 'Pasta Bolognese' }
+      updater = new Recipe { name: 'Pasta Bolognese' }, recipe.key
       updater.doc.is_locked = true
       updater.update(true).then(
         (u) ->

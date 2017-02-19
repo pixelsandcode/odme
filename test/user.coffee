@@ -1,8 +1,9 @@
 Base = require('../build/main').Base
+Joi  = require 'joi'
 
 class Model extends Base
-  
-  _key: -> 
+
+  _key: ->
     id = 'fixedID'
     if @PREFIX == false
       "#{id}"
@@ -10,13 +11,13 @@ class Model extends Base
       "#{@PREFIX}_#{id}"
 
 module.exports = class User extends Model
-  
+
   PREFIX: 'u'
   props: {
-    name: true,
-    age: true,
-    city: true,
-    country: true,
-    popularity: false,
-    total_logins: false
+    name: Joi.string()
+    age: Joi.number().min(0).max(120)
+    city: Joi.string()
+    country: Joi.string()
+    popularity: Joi.number()
+    total_logins: Joi.number()
   }

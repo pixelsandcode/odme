@@ -28,20 +28,20 @@ module.exports = class CB extends Base
   @get: (key, raw)->
     return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
     raw ||= false
-    make = (k, d) =>
-      instance = new @ k, d
-      instance.doc = d.value
-      instance.cas = d.cas
-      instance.key = k
+    make = (key, document) =>
+      instance = new @ document, key
+      instance.doc = document.value
+      instance.cas = document.cas
+      instance.key = key
       instance.is_new = false
       instance
-    @::source.get(key).then (d)->
-      return d if d.isBoom || raw
+    @::source.get(key).then (document)->
+      return document if document.isBoom || raw
       if key not instanceof Array
-        return make( key, d )
+        return make( key, document )
       list = []
       for i in key
-        list.push make( i, d[i] )
+        list.push make( i, document[i] )
       list
 
   # ## Find
@@ -85,12 +85,12 @@ module.exports = class CB extends Base
   #
   # Check the CB callback's result and make sure there was no error. If so and masked version is requested, it will return the masked result.
   #
-  # @method _mask_or_data(data[, mask])
+  # @method maskOrData(data[, mask])
   # @private
   #
   # @param {string|array|true}           mask  this works exactly same way mask(mask) method works
   #
-  _mask_or_data: (data, mask)->
+  maskOrData: (data, mask)->
     if data.isBoom || ! mask?
       data
     else
@@ -117,6 +117,10 @@ module.exports = class CB extends Base
   create: (mask) ->
     @lifeCycle(mask, "Create", () => @source.insert(@key, @doc))
 
+
+  # ## Handles callbacks
+  #
+  # calls the before and after callbaks of create and update
   lifeCycle: (mask, type, fn) ->
     before = Promise.method(@["before#{type}"].bind(@))
     beforeSave = Promise.method(@beforeSave.bind(@))
@@ -132,7 +136,7 @@ module.exports = class CB extends Base
         throw passed if passed isnt true
         fn(mask)
       .then (data) =>
-        @_mask_or_data(data, mask)
+        @maskOrData(data, mask)
       .then (data) =>
         afterSave(data)
       .then (data) =>
@@ -208,9 +212,10 @@ module.exports = class CB extends Base
   #   Recipe.remove('recipe_UYd3f1Ty65').then (d) -> console.log d
   #
   @remove: (key)->
-    @::source.remove(key).then (d)->
-      return d if d.isBoom
-      return true
+    @::source.remove(key)
+      .then (data)->
+        return data if data.isBoom
+        return true
 
   # ## Before update Callback
   #
