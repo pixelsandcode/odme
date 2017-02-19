@@ -130,6 +130,11 @@ describe 'Base', ->
 
 describe 'CB', ->
 
+  it "xxx should return error when trying to get a document with another prefix", ->
+    Recipe.get("test")
+      .then (result) ->
+        result.should.be.an.instanceof Error
+
   it "should create a doc & return masked doc or db's result", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
 

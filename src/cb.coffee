@@ -1,7 +1,6 @@
 Base = require './base'
 Boom = require 'boom'
 _    = require 'lodash'
-Q    = require 'q'
 Promise = require 'bluebird'
 
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
@@ -27,6 +26,7 @@ module.exports = class CB extends Base
   #
   @get: (key, raw)->
     return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
+    throw "you can only interact with keys starting with #{@PREFIX}" unless _.startsWith(key, @PREFIX)
     raw ||= false
     make = (key, document) =>
       instance = new @ document, key
@@ -59,7 +59,8 @@ module.exports = class CB extends Base
   #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
   #
   @find: (key, raw, as_object)->
-    return Q( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
+    return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
+    throw "you can only interact with keys starting with #{@PREFIX}" unless _.startsWith(key, @PREFIX)
     @::source.get(key, true).then (d)=>
       return d if d.isBoom || (raw? && raw == true)
       mask = (@::_mask||null)
@@ -212,6 +213,7 @@ module.exports = class CB extends Base
   #   Recipe.remove('recipe_UYd3f1Ty65').then (d) -> console.log d
   #
   @remove: (key)->
+    throw "you can only interact with keys starting with #{@PREFIX}" unless _.startsWith(key, @PREFIX)
     @::source.remove(key)
       .then (data)->
         return data if data.isBoom
