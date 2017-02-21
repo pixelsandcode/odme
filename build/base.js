@@ -1,5 +1,5 @@
 (function() {
-  var Joi, JsonMask, Model, Promise, ShortID, _;
+  var Joi, JsonMask, Model, Promise, ShortID, _, es;
 
   ShortID = require('shortid');
 
@@ -10,6 +10,8 @@
   Joi = require('joi');
 
   Promise = require('bluebird');
+
+  es = require('elasticsearch');
 
   module.exports = Model = (function() {
     Model.prototype.source = null;
@@ -116,6 +118,20 @@
         })), this.prototype.global_mask = keys.join(','), this.prototype.global_mask);
       }
       return JsonMask(doc, mask);
+    };
+
+    Model.search = function(type, query, options) {
+      var client;
+      client = new es.Client({
+        host: config.searchengine.host + ":" + config.searchengine.port,
+        log: config.searchengine.log
+      });
+      query.index = config.searchengine.name;
+      query.type = type;
+      if ((options != null ? options.search_type : void 0) != null) {
+        query.search_type = options.search_type;
+      }
+      return client.search(query);
     };
 
     return Model;

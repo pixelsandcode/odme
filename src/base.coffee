@@ -3,6 +3,7 @@ JsonMask = require 'json-mask'
 _ = require 'lodash'
 Joi = require 'joi'
 Promise = require 'bluebird'
+es = require 'elasticsearch'
 
 module.exports = class Model
 
@@ -250,3 +251,12 @@ module.exports = class Model
         @::global_mask
       )
     JsonMask doc, mask
+
+  @search: (type, query, options) ->
+    client = new es.Client
+      host: "#{config.host}:#{config.port}"
+      log: config.log
+    query.index = config.name
+    query.type = type
+    query.search_type = options.search_type if options?.search_type?
+    client.search(query)
