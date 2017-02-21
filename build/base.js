@@ -120,18 +120,34 @@
       return JsonMask(doc, mask);
     };
 
+    Model.handleESDATA = function(data, options) {
+      return new Promise(function(resolve) {
+        if ((options != null ? options.couchbase_documents : void 0) === true) {
+          return this.find(_.map(data.hits.hits, "_id")).then(documents)(function() {
+            return resolve(documents);
+          });
+        } else {
+          return resolve(_.map(_.map(data.hits.hits, "_source"), function(o) {
+            return o.doc;
+          }));
+        }
+      });
+    };
+
     Model.search = function(type, query, options) {
       var client;
       client = new es.Client({
-        host: config.searchengine.host + ":" + config.searchengine.port,
-        log: config.searchengine.log
+        host: config.host + ":" + config.port,
+        log: config.log
       });
-      query.index = config.searchengine.name;
+      query.index = config.name;
       query.type = type;
       if ((options != null ? options.search_type : void 0) != null) {
         query.search_type = options.search_type;
       }
-      return client.search(query);
+      return client.search(query).then(result)(function() {
+        return this.handleESDATA(data, options);
+      });
     };
 
     return Model;

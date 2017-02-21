@@ -252,6 +252,15 @@ module.exports = class Model
       )
     JsonMask doc, mask
 
+  @handleESDATA: (data, options) ->
+    new Promise (resolve) ->
+      if options?.couchbase_documents is true
+        @find(_.map(data.hits.hits, "_id"), options.mask)
+          .then(documents) ->
+            resolve documents
+      else
+        resolve _.map(_.map(data.hits.hits, "_source"), (o) -> return o.doc)
+
   @search: (type, query, options) ->
     client = new es.Client
       host: "#{config.host}:#{config.port}"
@@ -260,3 +269,5 @@ module.exports = class Model
     query.type = type
     query.search_type = options.search_type if options?.search_type?
     client.search(query)
+      .then(result) ->
+        @handleESDATA(data, options)

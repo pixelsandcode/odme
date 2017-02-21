@@ -5,6 +5,7 @@ User    = require('./user')
 Recipe    = require('./recipe')
 Wrong = require('./wrong')
 BaseBook = require('./book')
+esTestData = require('./es_test_data.json')
 
 describe 'Base', ->
 
@@ -350,3 +351,9 @@ describe 'CB', ->
     recipe.create().then (d) ->
       Recipe.get(recipe.key).then (obj) ->
         obj.is_new.should.be.equal false
+describe 'ES', ->
+  it "should get the results from ES directly", ->
+    Base.handleESDATA(esTestData)
+    .then (result) ->
+      result.length.should.eq 2
+      result[0].brand_name.should.eq 'test'
