@@ -1,5 +1,5 @@
 (function() {
-  var Joi, JsonMask, Model, Promise, ShortID, _, es;
+  var Joi, JsonMask, Model, Promise, ShortID, _;
 
   ShortID = require('shortid');
 
@@ -11,18 +11,16 @@
 
   Promise = require('bluebird');
 
-  es = require('elasticsearch');
-
   module.exports = Model = (function() {
     Model.prototype.source = null;
 
     Model.prototype.PREFIX = null;
 
-    Model.prototype.doc_type = null;
+    Model.prototype.docType = null;
 
     Model.prototype.props = [];
 
-    Model.prototype.props_schema = Joi.object().pattern(/.*/, Joi.object().min(1)).min(1);
+    Model.prototype.propsSchema = Joi.object().pattern(/.*/, Joi.object().min(1)).min(1);
 
     Model.prototype._mask = null;
 
@@ -39,38 +37,34 @@
       if (this.PREFIX == null) {
         this.PREFIX = this.constructor.name.toLowerCase();
       }
-      if (this.doc_type == null) {
-        this.doc_type = this.constructor.name.toLowerCase();
+      if (this.docType == null) {
+        this.docType = this.constructor.name.toLowerCase();
       }
       this.validate_props();
       this._keys = _.keys(this.props);
-      this.setter_mask = this._keys.join(',');
+      this.setterMask = this._keys.join(',');
       if (this._mask == null) {
-        this._mask = this.setter_mask;
+        this._mask = this.setterMask;
       }
-      switch (arguments.length) {
-        case 0:
-          this.doc = {};
-          this.key = this._key();
-          break;
-        case 1:
-          this.key = this._key();
+      if (this.doc == null) {
+        this.doc = {};
       }
-      if (this.key != null) {
-        this.key = "" + this.key;
+      if (this.key == null) {
+        this.key = this._key();
+      }
+      this.key = _.toString(this.key);
+      if (this.doc != null) {
+        this.doc = JsonMask(this.doc, this.setterMask) || {};
       }
       if (this.doc != null) {
-        this.doc = JsonMask(this.doc, this.setter_mask) || {};
-      }
-      if (this.doc != null) {
-        this.doc.doc_type = this.doc_type;
-        this.doc.doc_key = this.key;
+        this.doc.docType = this.docType;
+        this.doc.docKey = this.key;
       }
       this.validate_doc();
     }
 
     Model.prototype.validate_props = function() {
-      return Joi.validate(this.props, this.props_schema, function(err, value) {
+      return Joi.validate(this.props, this.propsSchema, function(err) {
         if (err) {
           throw {
             msg: 'the props field isnt valid',
@@ -83,10 +77,10 @@
 
     Model.prototype.validate_doc = function() {
       _.extend(this.props, {
-        doc_type: Joi.string().required(),
-        doc_key: Joi.string().required()
+        docType: Joi.string().required(),
+        docKey: Joi.string().required()
       });
-      return Joi.validate(this.doc, this.props, function(err, value) {
+      return Joi.validate(this.doc, this.props, function(err) {
         if (err) {
           throw {
             msg: 'doc is not valid',
@@ -113,41 +107,11 @@
     Model.mask = function(doc, mask) {
       var keys;
       if (mask == null) {
-        mask = this.prototype.global_mask || (keys = _.keys(_.pickBy(this.prototype.props, function(i) {
+        mask = this.prototype.globalMask || (keys = _.keys(_.pickBy(this.prototype.props, function(i) {
           return i;
-        })), this.prototype.global_mask = keys.join(','), this.prototype.global_mask);
+        })), this.prototype.globalMask = keys.join(','), this.prototype.globalMask);
       }
       return JsonMask(doc, mask);
-    };
-
-    Model.handleESDATA = function(data, options) {
-      return new Promise(function(resolve) {
-        if ((options != null ? options.couchbase_documents : void 0) === true) {
-          return this.find(_.map(data.hits.hits, "_id")).then(documents)(function() {
-            return resolve(documents);
-          });
-        } else {
-          return resolve(_.map(_.map(data.hits.hits, "_source"), function(o) {
-            return o.doc;
-          }));
-        }
-      });
-    };
-
-    Model.search = function(type, query, options) {
-      var client;
-      client = new es.Client({
-        host: config.host + ":" + config.port,
-        log: config.log
-      });
-      query.index = config.name;
-      query.type = type;
-      if ((options != null ? options.search_type : void 0) != null) {
-        query.search_type = options.search_type;
-      }
-      return client.search(query).then(result)(function() {
-        return this.handleESDATA(data, options);
-      });
     };
 
     return Model;

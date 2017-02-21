@@ -1,6 +1,7 @@
 should  = require('chai').should()
 chai = require('chai')
 Base   = require('../build/main').Base
+CB = require('../build/main').CB ({})
 User    = require('./user')
 Recipe    = require('./recipe')
 Wrong = require('./wrong')
@@ -79,18 +80,18 @@ describe 'Base', ->
     user.should.have.property('PREFIX').that.equal 'u'
     user.key.should.equal "u_fixedID"
 
-  it 'should have @doc_type same as class name and set @doc.doc_type even if @doc was empty', ->
+  it 'should have @docType same as class name and set @doc.docType even if @doc was empty', ->
     user = new User {}
-    user.should.have.property('doc_type').that.equal 'user'
+    user.should.have.property('docType').that.equal 'user'
     user.should.have.property('doc').that.be.not.a 'null'
     user = new User { name: 'Arash' }
-    user.should.have.property('doc_type').that.equal 'user'
+    user.should.have.property('docType').that.equal 'user'
 
     class Book extends BaseBook
-      doc_type: 'notebook'
+      docType: 'notebook'
 
     book = new Book
-    book.should.have.property('doc_type').that.equal 'notebook'
+    book.should.have.property('docType').that.equal 'notebook'
 
   it "should let inherited classes to have their own ID generator", ->
     user = new User { name: 'Arash' }
@@ -106,7 +107,7 @@ describe 'Base', ->
       _mask: 'name,pages'
 
     book = new Book { name: 'NodeJS ODM', pages: 100 }
-    book.doc.should.eql { name: 'NodeJS ODM', doc_type: 'book', doc_key: book.key, pages: 100 }
+    book.doc.should.eql { name: 'NodeJS ODM', docType: 'book', docKey: book.key, pages: 100 }
     book.doc.pages = 150
     book.doc.price = '$50'
     book.mask().should.eql { name: 'NodeJS ODM', pages: 150 }
@@ -114,20 +115,20 @@ describe 'Base', ->
   it "should rewrite getters mask", ->
     jack = new User { name: 'Jack', age: 31 }
     jack.doc.lastname = 'Cooper'
-    jack.mask().should.eql { name: 'Jack', age: 31, doc_type: 'user', doc_key: jack.key }
+    jack.mask().should.eql { name: 'Jack', age: 31, docType: 'user', docKey: jack.key }
     jack.mask('name').should.eql { name: 'Jack' }
-    jack.mask(['lastname']).should.eql { name: 'Jack', age: 31, lastname: "Cooper", doc_type: 'user', doc_key: jack.key }
-    jack.mask(false).should.eql { name: 'Jack', age: 31, lastname: "Cooper", doc_type: 'user', doc_key: jack.key }
+    jack.mask(['lastname']).should.eql { name: 'Jack', age: 31, lastname: "Cooper", docType: 'user', docKey: jack.key }
+    jack.mask(false).should.eql { name: 'Jack', age: 31, lastname: "Cooper", docType: 'user', docKey: jack.key }
 
   it "should have static getters mask", ->
-    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', doc_type: 'user', doc_key: '123' }).should.eql { name: 'Jack', age: 31, doc_type: 'user', doc_key: '123' }
-    User::global_mask.should.be.equal 'name,age,city,country,popularity,total_logins,doc_type,doc_key'
-    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, doc_key: '123' }).should.eql { name: 'Jack', age: 31, doc_key: '123' }
+    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', docType: 'user', docKey: '123' }).should.eql { name: 'Jack', age: 31, docType: 'user', docKey: '123' }
+    User::globalMask.should.be.equal 'name,age,city,country,popularity,total_logins,docType,docKey'
+    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, docKey: '123' }).should.eql { name: 'Jack', age: 31, docKey: '123' }
 
   it "should override key generation method", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.key.should.match /recipe$/
-    recipe.key.should.be.eql recipe.doc.doc_key
+    recipe.key.should.be.eql recipe.doc.docKey
 
 describe 'CB', ->
 
@@ -147,7 +148,7 @@ describe 'CB', ->
         recipe2.doc.popularity = 100
         recipe2.create(true)
           .then (d) ->
-            d.should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe2.key, doc_type: 'recipe', popularity: 100, maximum_likes: 100, inc_hit: 2 }
+            d.should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe2.key, docType: 'recipe', popularity: 100, maximum_likes: 100, inc_hit: 2 }
 
             recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
             recipe.doc.popularity = 100
@@ -160,14 +161,14 @@ describe 'CB', ->
 
     recipe.create([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
-        recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1 }
-        recipe.mask(true).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 1, doc_type: 'recipe', maximum_likes: 100, total_hits: 10 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
+        recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 1 }
+        recipe.mask(true).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 1, docType: 'recipe', maximum_likes: 100, total_hits: 10 }
         updater = new Recipe { name: 'Anti Pasta' }, recipe.key
         updater.update([]).then(
           (u) ->
-            u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key }
-            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, hits: 11 }
+            u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key }
+            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 11 }
         )
     )
 
@@ -180,7 +181,7 @@ describe 'CB', ->
         updater = new Recipe { name: 'Pasta Bolognese' }, recipe2.key
         updater.update(true).then(
           (u) ->
-            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, doc_key: recipe2.key, doc_type: 'recipe', maximum_likes: 100 }
+            u.should.eql { name: 'Pasta Bolognese', origin: 'Italy', popularity: 100, docKey: recipe2.key, docType: 'recipe', maximum_likes: 100 }
         )
     )
 
@@ -192,7 +193,7 @@ describe 'CB', ->
           obj.doc.name = 'Anti Pasta'
           obj.update([]).then(
             (doc) ->
-              doc.should.eql { name: 'Anti Pasta', origin: 'Italy', doc_key: recipe.key }
+              doc.should.eql { name: 'Anti Pasta', origin: 'Italy', docKey: recipe.key }
           )
     )
 
@@ -227,7 +228,7 @@ describe 'CB', ->
 
     recipe.create([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
         Recipe.remove(recipe.key).then (d) -> d.should.equal true
     )
 
@@ -237,12 +238,12 @@ describe 'CB', ->
 
     recipe.create([]).then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, doc_key: recipe.key, inc_hit: 2 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
         Recipe.get(recipe.key).then( (d) ->
           d.should.be.an.instanceof Recipe
-          d.mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key,  popularity: 100 }
+          d.mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key,  popularity: 100 }
           Recipe.get(recipe.key, true).then(
-            (d) -> d.value.should.be.eql { name: 'Pasta', origin: 'Italy', doc_type: 'recipe', doc_key: recipe.key, popularity: 100, maximum_likes: 100 }
+            (d) -> d.value.should.be.eql { name: 'Pasta', origin: 'Italy', docType: 'recipe', docKey: recipe.key, popularity: 100, maximum_likes: 100 }
           )
         )
     )
@@ -260,11 +261,11 @@ describe 'CB', ->
         Recipe.get([recipe.key, recipe2.key]).then( (d) ->
           d.should.be.an.instanceof Array
           d[0].should.be.an.instanceof Recipe
-          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
+          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
           Recipe.get([recipe.key, recipe2.key], true).then( (d) ->
             d.should.be.an.instanceof Object
             d[recipe.key].should.have.property 'cas'
-            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe', popularity: 100 }
+            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, docType: 'recipe', popularity: 100 }
           )
         )
     )
@@ -282,15 +283,15 @@ describe 'CB', ->
         Recipe.find([recipe.key, recipe2.key])
           .then (d) ->
             d.should.be.an.instanceof Array
-            d[0].should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
+            d[0].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
             Recipe.find([recipe.key, recipe2.key], true)
               .then (d) ->
                 d.should.be.an.instanceof Array
-                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, doc_type: 'recipe', popularity: 100 }
+                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, docType: 'recipe', popularity: 100 }
                 Recipe.find([recipe.key, recipe2.key], false, true)
                   .then (d) ->
                     d.should.be.an.instanceof Object
-                    d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', doc_key: recipe.key, popularity: 100 }
+                    d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
                     Recipe.find([recipe.key, recipe2.key], 'name,popularity', true)
                       .then (d) ->
                         d.should.be.an.instanceof Object
@@ -353,7 +354,7 @@ describe 'CB', ->
         obj.is_new.should.be.equal false
 describe 'ES', ->
   it "should get the results from ES directly", ->
-    Base.handleESDATA(esTestData)
+    CB.handleElasticData(esTestData)
     .then (result) ->
       result.length.should.eq 2
       result[0].brand_name.should.eq 'test'

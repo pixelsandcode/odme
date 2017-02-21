@@ -70,7 +70,7 @@
           }
           if (!(key instanceof Array)) {
             if ((as_object != null) && as_object) {
-              (o = {})[d.doc_key] = _this.mask(d, mask);
+              (o = {})[d.docKey] = _this.mask(d, mask);
               return o;
             } else {
               return _this.mask(d, mask);
@@ -80,7 +80,7 @@
               list = {};
               for (j = 0, len = d.length; j < len; j++) {
                 i = d[j];
-                list[i.doc_key] = _this.mask(i, mask);
+                list[i.docKey] = _this.mask(i, mask);
               }
             } else {
               list = [];

@@ -7,7 +7,7 @@ Promise = require 'bluebird'
 #
 # This Model class is using puffer for CRUDing. It's recommended to read [puffer's documentation](https://www.npmjs.com/package/puffer) first.
 #
-module.exports = (options) ->
+module.exports = (client) ->
   return class CB extends Base
 
     # ## Get
@@ -58,23 +58,23 @@ module.exports = (options) ->
     # @example
     #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
     #
-    @find: (key, raw, as_object)->
+    @find: (key, raw, asObject)->
       return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
       @::source.get(key, true).then (d)=>
         return d if d.isBoom || (raw? && raw == true)
         mask = (@::_mask||null)
         mask = raw if typeof raw == 'string'
         if key not instanceof Array
-          if as_object? and as_object
-            (o = {})[d.doc_key] = @mask d, mask
+          if asObject? and asObject
+            (o = {})[d.docKey] = @mask d, mask
             return o
           else
             return @mask d, mask
         else
-          if as_object? and as_object
+          if asObject? and asObject
             list = {}
             for i in d
-              list[i.doc_key] = @mask i, mask
+              list[i.docKey] = @mask i, mask
           else
             list = []
             for i in d
@@ -146,6 +146,8 @@ module.exports = (options) ->
             err
           else
             Boom.notAcceptable "Validation failed"
+
+
 
     # ## Update
     #
@@ -252,3 +254,20 @@ module.exports = (options) ->
     # Override save callback in your models. If you want the data being passed in promises chain after calling **afterSave** make sure you are returning it. This will be called after create and update.
     #
     afterSave: (data) -> return data
+
+    @handleElasticData: (data, options) ->
+      new Promise (resolve) ->
+        if options?.couchbase_documents is true
+          @find(_.map(data.hits.hits, "_id"), options.mask)
+            .then(documents) ->
+              resolve documents
+        else
+          resolve _.map(_.map(data.hits.hits, "_source"), (o) -> return o.doc)
+
+    @search: (type, query, options) ->
+      query.index = config.name
+      query.type = type
+      query.search_type = options.searchType if options?.searchType?
+      client.search(query)
+        .then(result) ->
+          @handleElasticData(data, options)

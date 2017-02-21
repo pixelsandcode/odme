@@ -11,7 +11,7 @@
 
   Promise = require('bluebird');
 
-  module.exports = function(options) {
+  module.exports = function(client) {
     var CB;
     return CB = (function(superClass) {
       extend(CB, superClass);
@@ -54,7 +54,7 @@
         });
       };
 
-      CB.find = function(key, raw, as_object) {
+      CB.find = function(key, raw, asObject) {
         if (_.isEmpty(key || _.isNaN(key))) {
           return Promise.resolve(_.isArray(key) ? [] : null);
         }
@@ -69,18 +69,18 @@
               mask = raw;
             }
             if (!(key instanceof Array)) {
-              if ((as_object != null) && as_object) {
-                (o = {})[d.doc_key] = _this.mask(d, mask);
+              if ((asObject != null) && asObject) {
+                (o = {})[d.docKey] = _this.mask(d, mask);
                 return o;
               } else {
                 return _this.mask(d, mask);
               }
             } else {
-              if ((as_object != null) && as_object) {
+              if ((asObject != null) && asObject) {
                 list = {};
                 for (j = 0, len = d.length; j < len; j++) {
                   i = d[j];
-                  list[i.doc_key] = _this.mask(i, mask);
+                  list[i.docKey] = _this.mask(i, mask);
                 }
               } else {
                 list = [];
@@ -204,6 +204,31 @@
 
       CB.prototype.afterSave = function(data) {
         return data;
+      };
+
+      CB.handleElasticData = function(data, options) {
+        return new Promise(function(resolve) {
+          if ((options != null ? options.couchbase_documents : void 0) === true) {
+            return this.find(_.map(data.hits.hits, "_id"), options.mask).then(documents)(function() {
+              return resolve(documents);
+            });
+          } else {
+            return resolve(_.map(_.map(data.hits.hits, "_source"), function(o) {
+              return o.doc;
+            }));
+          }
+        });
+      };
+
+      CB.search = function(type, query, options) {
+        query.index = config.name;
+        query.type = type;
+        if ((options != null ? options.searchType : void 0) != null) {
+          query.search_type = options.searchType;
+        }
+        return client.search(query).then(result)(function() {
+          return this.handleElasticData(data, options);
+        });
       };
 
       return CB;
