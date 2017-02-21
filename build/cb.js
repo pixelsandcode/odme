@@ -1,5 +1,5 @@
 (function() {
-  var Base, Boom, CB, Promise, Q, _,
+  var Base, Boom, CB, Promise, _,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
@@ -8,8 +8,6 @@
   Boom = require('boom');
 
   _ = require('lodash');
-
-  Q = require('q');
 
   Promise = require('bluebird');
 
@@ -56,7 +54,7 @@
 
     CB.find = function(key, raw, as_object) {
       if (_.isEmpty(key || _.isNaN(key))) {
-        return Q(_.isArray(key) ? [] : null);
+        return Promise.resolve(_.isArray(key) ? [] : null);
       }
       return this.prototype.source.get(key, true).then((function(_this) {
         return function(d) {

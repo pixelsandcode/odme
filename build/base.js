@@ -1,5 +1,5 @@
 (function() {
-  var Joi, JsonMask, Model, ShortID, _;
+  var Joi, JsonMask, Model, Promise, ShortID, _;
 
   ShortID = require('shortid');
 
@@ -9,12 +9,12 @@
 
   Joi = require('joi');
 
+  Promise = require('bluebird');
+
   module.exports = Model = (function() {
     Model.prototype.source = null;
 
     Model.prototype.PREFIX = null;
-
-    Model.prototype.Q = require('q');
 
     Model.prototype.doc_type = null;
 

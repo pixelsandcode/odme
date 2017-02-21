@@ -1,7 +1,6 @@
 Base = require './base'
 Boom = require 'boom'
 _    = require 'lodash'
-Q    = require 'q'
 Promise = require 'bluebird'
 
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
@@ -59,7 +58,7 @@ module.exports = class CB extends Base
   #   recipe.find('recipe_uX87dkF3Bj').then (d) -> console.log d
   #
   @find: (key, raw, as_object)->
-    return Q( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
+    return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
     @::source.get(key, true).then (d)=>
       return d if d.isBoom || (raw? && raw == true)
       mask = (@::_mask||null)

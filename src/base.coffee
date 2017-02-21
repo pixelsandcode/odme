@@ -2,6 +2,7 @@ ShortID = require 'shortid'
 JsonMask = require 'json-mask'
 _ = require 'lodash'
 Joi = require 'joi'
+Promise = require 'bluebird'
 
 module.exports = class Model
 
@@ -37,7 +38,6 @@ module.exports = class Model
   # PREFIX is used in key generation method (all ODME objects have a key). If you do not set this property, the key's prefix will be same as class name. If you want to customize it set `PREFIX` to what you like. In case you do not want prefix in your keys, set it to **false**.
   #
   PREFIX: null
-  Q: require 'q'
 
   # ## Document type
   #
