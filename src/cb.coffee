@@ -168,7 +168,7 @@ module.exports = (client) ->
     # You instantiate a new ODME object with the key of previously stored docuemnt and assign your proeprties to its `.doc`. When `.update()` method is called, it will replace get the old doc internally and merge your new properties into it.
     #
     # ```
-    #   recipe = new Recipe "recipe_xhygd12gH3", { name: 'Pasta' }
+    #   recipe = new Recipe { name: 'Pasta' }, "recipe_xhygd12gH3"
     #   recipe.update()
     #
     # ```

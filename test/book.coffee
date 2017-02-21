@@ -4,6 +4,10 @@ Joi  = require 'joi'
 module.exports = class Book extends Base
 
   props: {
-    name: Joi.string()
-    pages: Joi.number().min(1)
+    name:
+      schema: Joi.string()
+      whiteList: true
+    pages:
+      schema: Joi.number().min(1)
+      whiteList: true
   }

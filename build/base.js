@@ -20,13 +20,16 @@
 
     Model.prototype.props = [];
 
-    Model.prototype.propsSchema = Joi.object().pattern(/.*/, Joi.object().min(1)).min(1);
+    Model.prototype.propsSchema = Joi.object().pattern(/.*/, Joi.object().min(1).keys({
+      schema: Joi.object().min(1).required(),
+      whiteList: Joi.boolean()["default"](false)
+    })).min(1);
 
     Model.prototype._mask = null;
 
-    function Model(doc1, key) {
+    function Model(doc1, key1) {
       this.doc = doc1;
-      this.key = key;
+      this.key = key1;
       this.is_new = true;
       if (typeof this.key !== 'string' && this.key) {
         throw "key should be a string";
@@ -40,11 +43,14 @@
       if (this.docType == null) {
         this.docType = this.constructor.name.toLowerCase();
       }
-      this.validate_props();
-      this._keys = _.keys(this.props);
+      this.validateProps();
+      this._keys = _.keys(_.pickBy(this.props, function(prop) {
+        return prop.whiteList;
+      }));
       this.setterMask = this._keys.join(',');
       if (this._mask == null) {
         this._mask = this.setterMask;
+        this._mask += ",docType,docKey";
       }
       if (this.doc == null) {
         this.doc = {};
@@ -60,10 +66,10 @@
         this.doc.docType = this.docType;
         this.doc.docKey = this.key;
       }
-      this.validate_doc();
+      this.validateDoc();
     }
 
-    Model.prototype.validate_props = function() {
+    Model.prototype.validateProps = function() {
       return Joi.validate(this.props, this.propsSchema, function(err) {
         if (err) {
           throw {
@@ -75,12 +81,23 @@
       });
     };
 
-    Model.prototype.validate_doc = function() {
+    Model.prototype.validateDoc = function() {
+      var props;
       _.extend(this.props, {
-        docType: Joi.string().required(),
-        docKey: Joi.string().required()
+        docType: {
+          schema: Joi.string().required(),
+          whiteList: false
+        },
+        docKey: {
+          schema: Joi.string().required(),
+          whiteList: false
+        }
       });
-      return Joi.validate(this.doc, this.props, function(err) {
+      props = {};
+      _.each(this.props, function(value, key) {
+        return props[key] = value.schema;
+      });
+      return Joi.validate(this.doc, props, function(err) {
         if (err) {
           throw {
             msg: 'doc is not valid',

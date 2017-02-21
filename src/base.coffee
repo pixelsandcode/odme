@@ -80,7 +80,12 @@ module.exports = class Model
   #
   # this is a Joi schema used to validate the props
   propsSchema:
-    Joi.object().pattern(/.*/, Joi.object().min(1)).min(1)
+    Joi.object().pattern(/.*/, Joi.object().min(1).keys(
+      {
+        schema: Joi.object().min(1).required()
+        whiteList: Joi.boolean().default(false)
+      }
+    )).min(1)
 
   # ## Default Mask
   #
@@ -148,11 +153,12 @@ module.exports = class Model
     throw "prefix must be a string" if typeof @PREFIX isnt 'string' and @PREFIX
     @PREFIX = @constructor.name.toLowerCase() if ! @PREFIX?
     @docType = @constructor.name.toLowerCase() if ! @docType?
-    @validate_props()
-    @_keys = _.keys @props
+    @validateProps()
+    @_keys = _.keys(_.pickBy(@props, (prop) -> return prop.whiteList))
     @setterMask = @_keys.join ','
     if ! @_mask?
       @_mask = @setterMask
+      @_mask += ",docType,docKey"
     @doc ?= {}
     @key ?= @_key()
     @key = _.toString @key
@@ -160,16 +166,26 @@ module.exports = class Model
     if @doc?
       @doc.docType = @docType
       @doc.docKey = @key
-    @validate_doc()
+    @validateDoc()
 
-  validate_props: () ->
+  validateProps: () ->
     Joi.validate @props, @propsSchema, (err) ->
       throw {msg: 'the props field isnt valid', err} if err
       return yes
 
-  validate_doc: () ->
-    _.extend @props, {docType: Joi.string().required(), docKey: Joi.string().required()}
-    Joi.validate @doc, @props, (err) ->
+  validateDoc: () ->
+    _.extend @props, {
+      docType:
+        schema: Joi.string().required()
+        whiteList: false
+      docKey:
+        schema: Joi.string().required()
+        whiteList: false
+    }
+    props = {}
+    _.each @props, (value, key) ->
+      props[key] = value.schema
+    Joi.validate @doc, props, (err) ->
       throw {msg: 'doc is not valid', err} if err
 
   # ## Default key generator for doc

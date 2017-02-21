@@ -12,11 +12,21 @@ module.exports = class Recipe extends Base
 
   _mask: 'name,origin,popularity,docKey'
   props: {
-    name: Joi.string(),
-    origin: Joi.string(),
-    ingredients: Joi.string(),
-    popularity: Joi.number().min(0),
-    time: Joi.date()
+    name:
+      schema: Joi.string()
+      whiteList: true
+    origin:
+      schema: Joi.string()
+      whiteList: true
+    ingredients:
+      schema: Joi.string()
+      whiteList: true
+    popularity:
+      schema: Joi.number().min(0)
+      whiteList: true
+    time:
+      schema: Joi.date()
+      whiteList: true
   }
 
   constructor: (key, doc, all)->

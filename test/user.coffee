@@ -14,10 +14,22 @@ module.exports = class User extends Model
 
   PREFIX: 'u'
   props: {
-    name: Joi.string()
-    age: Joi.number().min(0).max(120)
-    city: Joi.string()
-    country: Joi.string()
-    popularity: Joi.number()
-    total_logins: Joi.number()
+    name:
+      schema: Joi.string()
+      whiteList: true
+    age:
+      schema: Joi.number().min(0).max(120)
+      whiteList: true
+    city:
+      schema: Joi.string()
+      whiteList: true
+    country:
+      schema: Joi.string()
+      whiteList: true
+    popularity:
+      schema: Joi.number()
+      whiteList: true
+    total_logins:
+      schema: Joi.number()
+      whiteList: true
   }
