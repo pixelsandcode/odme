@@ -7,7 +7,7 @@ Promise = require 'bluebird'
 #
 # This Model class is using puffer for CRUDing. It's recommended to read [puffer's documentation](https://www.npmjs.com/package/puffer) first.
 #
-module.exports = (client) ->
+module.exports = (client, config) ->
   return class CB extends Base
 
     # ## Get
