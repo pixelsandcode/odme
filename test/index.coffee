@@ -1,12 +1,14 @@
 should  = require('chai').should()
 chai = require('chai')
 Base   = require('../build/main').Base
-CB = require('../build/main').CB ({})
+CB = require('../build/cb')({host: 'localhost', port: 9200, index: 'test'})
 User    = require('./user')
 Recipe    = require('./recipe')
 Wrong = require('./wrong')
 BaseBook = require('./book')
 esTestData = require('./es_test_data.json')
+request = require('request')
+Promise = require 'bluebird'
 
 describe 'Base', ->
 
@@ -352,6 +354,31 @@ describe 'CB', ->
         obj.is_new.should.be.equal false
 
 describe 'ES', ->
+  it "should query ES and return data", (done) ->
+    dataString = '{
+      "doc": {
+        "name" : "Pasta",
+        "origin" : "italy"
+      }
+    }'
+    options = {
+      url: 'http://localhost:9200/test/recipe/1',
+      method: 'POST',
+      body: dataString
+    }
+    request options, (error, response, body) ->
+      throw error if error
+      response.statusCode.should.eq 200
+      query =
+        body:
+          query:
+            match_all: {}
+      Recipe.search('recipe', query)
+        .then (data) ->
+          data.length.should.eq 1
+          data[0].name.should.eq 'Pasta'
+          done()
+
   it "should get the results from ES directly", ->
     CB.handleElasticData(esTestData)
     .then (result) ->

@@ -2,13 +2,14 @@ Base = require './base'
 Boom = require 'boom'
 _    = require 'lodash'
 Promise = require 'bluebird'
+es = require 'elasticsearch'
 
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
 #
 # This Model class is using puffer for CRUDing. It's recommended to read [puffer's documentation](https://www.npmjs.com/package/puffer) first.
 # @param {object} this is the port, host, index name of elasticsearch and source of base.
 # @param {object} this is the elastic search client. if client is not passed one is created from config
-module.exports = (config, client) ->
+module.exports = (@config, @client) ->
   return class CB extends Base
 
     # ## Get
@@ -283,14 +284,16 @@ module.exports = (config, client) ->
     # @param {string} which type of document should elastic query
     # @param {object} the query itself
     # @param {object} there many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB
-    @search: (type, query, options) ->
+    @search: (type, query, options = {}) ->
+      throw 'config cannot be empty' unless config?
       query.index = config.index
       query.type = type
       query.search_type = options.searchType if options.searchType?
       unless client?
         client = new es.Client
           host: "#{config.host}:#{config.port}"
-          log: config.log
       client.search(query)
-        .then(result) ->
-          @handleElasticData(data, options)
+        .then (result) =>
+          @handleElasticData(result, options)
+        .catch (err) ->
+          throw err

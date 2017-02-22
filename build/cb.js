@@ -1,5 +1,5 @@
 (function() {
-  var Base, Boom, Promise, _,
+  var Base, Boom, Promise, _, es,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
@@ -11,8 +11,12 @@
 
   Promise = require('bluebird');
 
-  module.exports = function(config, client) {
+  es = require('elasticsearch');
+
+  module.exports = function(config1, client1) {
     var CB;
+    this.config = config1;
+    this.client = client1;
     return CB = (function(superClass) {
       extend(CB, superClass);
 
@@ -253,19 +257,29 @@
       };
 
       CB.search = function(type, query, options) {
+        var client;
+        if (options == null) {
+          options = {};
+        }
+        if (typeof config === "undefined" || config === null) {
+          throw 'config cannot be empty';
+        }
         query.index = config.index;
         query.type = type;
         if (options.searchType != null) {
           query.search_type = options.searchType;
         }
-        if (client == null) {
+        if (typeof client === "undefined" || client === null) {
           client = new es.Client({
-            host: config.host + ":" + config.port,
-            log: config.log
+            host: config.host + ":" + config.port
           });
         }
-        return client.search(query).then(result)(function() {
-          return this.handleElasticData(data, options);
+        return client.search(query).then((function(_this) {
+          return function(result) {
+            return _this.handleElasticData(result, options);
+          };
+        })(this))["catch"](function(err) {
+          throw err;
         });
       };
 
