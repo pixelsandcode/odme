@@ -220,7 +220,7 @@ describe 'CB', ->
                 d.should.be.an.instanceof Error
   )
 
-  it "xxx should remove a doc & return true or false", ->
+  it "should remove a doc & return true or false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
@@ -350,9 +350,58 @@ describe 'CB', ->
     recipe.create().then (d) ->
       Recipe.get(recipe.key).then (obj) ->
         obj.is_new.should.be.equal false
+
 describe 'ES', ->
   it "should get the results from ES directly", ->
     CB.handleElasticData(esTestData)
     .then (result) ->
       result.length.should.eq 2
       result[0].brand_name.should.eq 'test'
+
+  it "should get the results from ES directly and format", ->
+    CB.handleElasticData(esTestData, {format: true})
+    .then (result) ->
+      result.total.should.eq 2
+      result.list.length.should.eq 2
+      result.list[0].brand_name.should.eq 'test'
+
+  it "should get the keys from ES directly", ->
+    CB.handleElasticData(esTestData, {keys_only: true})
+    .then (result) ->
+      result.length.should.eq 2
+      result[0].should.eq 'lvn_s_B1A74dfFe'
+
+  it "should get the keys from ES directly and format", ->
+    CB.handleElasticData(esTestData, {keys_only: true, format: true})
+      .then (result) ->
+        result.total.should.eq 2
+        result.list.length.should.eq 2
+        result.list[0].should.eq 'lvn_s_B1A74dfFe'
+
+  it "should get the keys from couchbase", ->
+    recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe2.create()
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create()
+      .then () ->
+        esTestData.hits.hits[0]._id = recipe.key
+        esTestData.hits.hits[1]._id = recipe2.key
+        Recipe.handleElasticData(esTestData, {couchbase_documents: true})
+          .then (result) ->
+            result.length.should.eq 2
+            result[0].docKey.should.eq recipe.key
+
+  it "should get the keys from couchbase and format", ->
+    recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe2.create()
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create()
+      .then () ->
+        esTestData.hits.hits[0]._id = recipe.key
+        esTestData.hits.hits[1]._id = recipe2.key
+        Recipe.handleElasticData(esTestData, {couchbase_documents: true, format: true})
+          .then (result) ->
+            result.total.should.eq 2
+            result.list.length.should.eq 2
+            result.list[0].docKey.should.eq recipe.key
+

@@ -256,21 +256,28 @@ module.exports = (client, config) ->
     #
     afterSave: (data) -> return data
 
-    @handleElasticData: (data, options) ->
-      new Promise (resolve) ->
-        if options?.keys_only is true
-          resolve _.map(data.hits.hits, "_id")
-        if options?.couchbase_documents is true
-          @find(_.map(data.hits.hits, "_id"), options?.mask)
-            .then(documents) ->
+    # ## ElasticData
+    @handleElasticData: (data, options = {}) ->
+      new Promise (resolve) =>
+        total = data.hits.total
+        if options.keys_only is true
+          list = _.map(data.hits.hits, "_id")
+          resolve {total, list} if options.format is true
+          resolve list
+        if options.couchbase_documents is true
+          @find(_.map(data.hits.hits, "_id"), options.mask)
+            .then (documents) ->
+              resolve {total, list: documents} if options.format is true
               resolve documents
         else
-          resolve _.map(data.hits.hits, (o) -> return o._source.doc)
+          list = _.map(data.hits.hits, (o) -> return o._source.doc)
+          resolve {total, list} if options.format is true
+          resolve list
 
     @search: (type, query, options) ->
       query.index = config.index
       query.type = type
-      query.search_type = options.searchType if options?.searchType?
+      query.search_type = options.searchType if options.searchType?
       unless client?
         client = new es.Client
           host: "#{config.host}:#{config.port}"

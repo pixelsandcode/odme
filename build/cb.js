@@ -209,24 +209,60 @@
       };
 
       CB.handleElasticData = function(data, options) {
-        return new Promise(function(resolve) {
-          if ((options != null ? options.couchbase_documents : void 0) === true) {
-            return this.find(_.map(data.hits.hits, "_id"), options.mask).then(documents)(function() {
-              return resolve(documents);
-            });
-          } else {
-            return resolve(_.map(data.hits.hits, function(o) {
-              return o._source.doc;
-            }));
-          }
-        });
+        if (options == null) {
+          options = {};
+        }
+        return new Promise((function(_this) {
+          return function(resolve) {
+            var list, total;
+            total = data.hits.total;
+            if (options.keys_only === true) {
+              list = _.map(data.hits.hits, "_id");
+              if (options.format === true) {
+                resolve({
+                  total: total,
+                  list: list
+                });
+              }
+              resolve(list);
+            }
+            if (options.couchbase_documents === true) {
+              return _this.find(_.map(data.hits.hits, "_id"), options.mask).then(function(documents) {
+                if (options.format === true) {
+                  resolve({
+                    total: total,
+                    list: documents
+                  });
+                }
+                return resolve(documents);
+              });
+            } else {
+              list = _.map(data.hits.hits, function(o) {
+                return o._source.doc;
+              });
+              if (options.format === true) {
+                resolve({
+                  total: total,
+                  list: list
+                });
+              }
+              return resolve(list);
+            }
+          };
+        })(this));
       };
 
       CB.search = function(type, query, options) {
-        query.index = config.name;
+        query.index = config.index;
         query.type = type;
-        if ((options != null ? options.searchType : void 0) != null) {
+        if (options.searchType != null) {
           query.search_type = options.searchType;
+        }
+        if (client == null) {
+          client = new es.Client({
+            host: config.host + ":" + config.port,
+            log: config.log
+          });
         }
         return client.search(query).then(result)(function() {
           return this.handleElasticData(data, options);
