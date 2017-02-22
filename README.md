@@ -3,7 +3,7 @@ odme
 
 [![Build Status](https://travis-ci.org/tectual/odme.svg)](https://travis-ci.org/tectual/odme)
 [![npm version](https://badge.fury.io/js/odme.svg)](http://badge.fury.io/js/odme)
-[![Coverage Status](https://coveralls.io/repos/tectual/odme/badge.svg?branch=master)](https://coveralls.io/r/tectual/odme?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/tectual/odme/badge.svg?branch=master)](https://coveralls.io/github/tectual/odme?branch=master)
 
 [ODME](https://www.npmjs.com/package/odme) is not an ODM library. It helps you create a class to keep model logic and has some default logic such as setter, getter, masking and creating id with prefixes. All these behaviours can be changed easily at defining your modle classes. It has an extension to support Couchbase and you can add your own extension to support other storages.
 
