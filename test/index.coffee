@@ -7,8 +7,9 @@ Recipe    = require('./recipe')
 Wrong = require('./wrong')
 BaseBook = require('./book')
 esTestData = require('./es_test_data.json')
-request = require('request')
 Promise = require 'bluebird'
+request = require('request-promise')
+
 
 describe 'Base', ->
 
@@ -354,7 +355,8 @@ describe 'CB', ->
         obj.is_new.should.be.equal false
 
 describe 'ES', ->
-  it "should query ES and return data", (done) ->
+  it "should query ES and return data",  ->
+    this.timeout(2000)
     dataString = '{
       "doc": {
         "name" : "Pasta",
@@ -366,18 +368,19 @@ describe 'ES', ->
       method: 'POST',
       body: dataString
     }
-    request options, (error, response, body) ->
-      throw error if error
-      response.statusCode.should.eq 201
-      query =
-        body:
-          query:
-            match_all: {}
-      Recipe.search('recipe', query)
-        .then (data) ->
-          data.length.should.eq 1
-          data[0].name.should.eq 'Pasta'
-          done()
+    request options
+      .then () ->
+        query =
+          body:
+            query:
+              match_all: {}
+        search = () ->
+          Recipe.search('recipe', query)
+            .then (data) ->
+              console.log "HEREEEEEEEEEEEEE", data
+              data.length.should.eq 1
+              data[0].name.should.eq 'Pasta'
+        setTimeout(search, 1000)
 
   it "should get the results from ES directly", ->
     CB.handleElasticData(esTestData)
