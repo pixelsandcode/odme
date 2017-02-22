@@ -368,7 +368,7 @@ describe 'ES', ->
     }
     request options, (error, response, body) ->
       throw error if error
-      response.statusCode.should.eq 200
+      response.statusCode.should.eq 201
       query =
         body:
           query:
