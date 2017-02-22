@@ -6,8 +6,9 @@ Promise = require 'bluebird'
 # ## Model Layer Using [puffer library](https://www.npmjs.com/package/puffer)
 #
 # This Model class is using puffer for CRUDing. It's recommended to read [puffer's documentation](https://www.npmjs.com/package/puffer) first.
-#
-module.exports = (client, config) ->
+# @param {object} this is the port, host, index name of elasticsearch and source of base.
+# @param {object} this is the elastic search client. if client is not passed one is created from config
+module.exports = (config, client) ->
   return class CB extends Base
 
     # ## Get
@@ -256,15 +257,18 @@ module.exports = (client, config) ->
     #
     afterSave: (data) -> return data
 
-    # ## ElasticData
+    # ## Handle elasticsearch data
+    # this will handle the heavy lifting of getting the data you want in the format that you desire
+    # @param {string} return result of Elastic query
+    # @param {options} the same options that is passed to @search method
     @handleElasticData: (data, options = {}) ->
       new Promise (resolve) =>
         total = data.hits.total
-        if options.keys_only is true
+        if options.keysOnly is true
           list = _.map(data.hits.hits, "_id")
           resolve {total, list} if options.format is true
           resolve list
-        if options.couchbase_documents is true
+        if options.couchbaseDocuments is true
           @find(_.map(data.hits.hits, "_id"), options.mask)
             .then (documents) ->
               resolve {total, list: documents} if options.format is true
@@ -274,6 +278,11 @@ module.exports = (client, config) ->
           resolve {total, list} if options.format is true
           resolve list
 
+    # ## Query Elastic
+    #
+    # @param {string} which type of document should elastic query
+    # @param {object} the query itself
+    # @param {object} there many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB
     @search: (type, query, options) ->
       query.index = config.index
       query.type = type

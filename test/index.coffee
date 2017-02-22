@@ -366,13 +366,13 @@ describe 'ES', ->
       result.list[0].brand_name.should.eq 'test'
 
   it "should get the keys from ES directly", ->
-    CB.handleElasticData(esTestData, {keys_only: true})
+    CB.handleElasticData(esTestData, {keysOnly: true})
     .then (result) ->
       result.length.should.eq 2
       result[0].should.eq 'lvn_s_B1A74dfFe'
 
   it "should get the keys from ES directly and format", ->
-    CB.handleElasticData(esTestData, {keys_only: true, format: true})
+    CB.handleElasticData(esTestData, {keysOnly: true, format: true})
       .then (result) ->
         result.total.should.eq 2
         result.list.length.should.eq 2
@@ -386,7 +386,7 @@ describe 'ES', ->
       .then () ->
         esTestData.hits.hits[0]._id = recipe.key
         esTestData.hits.hits[1]._id = recipe2.key
-        Recipe.handleElasticData(esTestData, {couchbase_documents: true})
+        Recipe.handleElasticData(esTestData, {couchbaseDocuments: true})
           .then (result) ->
             result.length.should.eq 2
             result[0].docKey.should.eq recipe.key
@@ -399,7 +399,7 @@ describe 'ES', ->
       .then () ->
         esTestData.hits.hits[0]._id = recipe.key
         esTestData.hits.hits[1]._id = recipe2.key
-        Recipe.handleElasticData(esTestData, {couchbase_documents: true, format: true})
+        Recipe.handleElasticData(esTestData, {couchbaseDocuments: true, format: true})
           .then (result) ->
             result.total.should.eq 2
             result.list.length.should.eq 2
