@@ -121,9 +121,9 @@ describe 'Base', ->
     jack.mask(false).should.eql { name: 'Jack', age: 31, lastname: "Cooper", docType: 'user', docKey: jack.key }
 
   it "should have static getters mask", ->
-    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', docType: 'user', docKey: '123' }).should.eql { name: 'Jack', age: 31, docType: 'user', docKey: '123' }
-    User::globalMask.should.be.equal 'name,age,city,country,popularity,total_logins,docType,docKey'
-    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, docKey: '123' }).should.eql { name: 'Jack', age: 31, docKey: '123' }
+    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', docType: 'user', docKey: '123' }).should.eql { name: 'Jack', age: 31}
+    User::globalMask.should.be.equal 'name,age,city,country,popularity,total_logins'
+    User.mask({ name: 'Jack', age: 31, lastname: 'Cooper', logins: 20, docKey: '123' }).should.eql { name: 'Jack', age: 31}
 
   it "should override key generation method", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
@@ -142,8 +142,6 @@ describe 'CB', ->
     recipe.doc.popularity = 100
     recipe.create()
       .then (d) ->
-        d.should.have.property('cas')
-
         recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
         recipe2.doc.popularity = 100
         recipe2.create(true)
@@ -159,16 +157,16 @@ describe 'CB', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.create([]).then(
+    recipe.create().then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
-        recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 1 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2, docType: 'recipe' }
+        recipe.mask(['hits']).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 1, docType: 'recipe' }
         recipe.mask(true).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 1, docType: 'recipe', maximum_likes: 100, total_hits: 10 }
         updater = new Recipe { name: 'Anti Pasta' }, recipe.key
-        updater.update([]).then(
+        updater.update().then(
           (u) ->
-            u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key }
-            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 11 }
+            u.should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, docType: 'recipe' }
+            updater.mask(['hits']).should.eql { name: 'Anti Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, hits: 11, docType: 'recipe' }
         )
     )
 
@@ -187,13 +185,13 @@ describe 'CB', ->
 
   it "should get and update a doc", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
-    recipe.create([]).then(
-      (d) ->
+    recipe.create().then(
+      () ->
         updated = Recipe.get(recipe.key).then (obj) ->
           obj.doc.name = 'Anti Pasta'
-          obj.update([]).then(
+          obj.update().then(
             (doc) ->
-              doc.should.eql { name: 'Anti Pasta', origin: 'Italy', docKey: recipe.key }
+              doc.should.eql { name: 'Anti Pasta', origin: 'Italy', docKey: recipe.key, docType: 'recipe'}
           )
     )
 
@@ -222,13 +220,13 @@ describe 'CB', ->
                 d.should.be.an.instanceof Error
   )
 
-  it "should remove a doc & return true or false", ->
+  it "xxx should remove a doc & return true or false", ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.create([]).then(
+    recipe.create().then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2, docType: 'recipe' }
         Recipe.remove(recipe.key).then (d) -> d.should.equal true
     )
 
@@ -236,12 +234,12 @@ describe 'CB', ->
     recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
     recipe.doc.popularity = 100
 
-    recipe.create([]).then(
+    recipe.create().then(
       (d) ->
-        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2 }
+        d.should.eql { name: 'Pasta', origin: 'Italy', popularity: 100, docKey: recipe.key, inc_hit: 2, docType: 'recipe' }
         Recipe.get(recipe.key).then( (d) ->
           d.should.be.an.instanceof Recipe
-          d.mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key,  popularity: 100 }
+          d.mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key,  popularity: 100, docType: 'recipe' }
           Recipe.get(recipe.key, true).then(
             (d) -> d.value.should.be.eql { name: 'Pasta', origin: 'Italy', docType: 'recipe', docKey: recipe.key, popularity: 100, maximum_likes: 100 }
           )
@@ -256,16 +254,16 @@ describe 'CB', ->
     recipe2 = new Recipe { name: 'Pizza', origin: 'Italy' }
     recipe2.doc.popularity = 110
 
-    recipe2.create([]).then(
+    recipe2.create().then(
       (d) ->
         Recipe.get([recipe.key, recipe2.key]).then( (d) ->
           d.should.be.an.instanceof Array
           d[0].should.be.an.instanceof Recipe
-          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
+          d[0].mask().should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100, docType: 'recipe' }
           Recipe.get([recipe.key, recipe2.key], true).then( (d) ->
             d.should.be.an.instanceof Object
             d[recipe.key].should.have.property 'cas'
-            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, docType: 'recipe', popularity: 100 }
+            Recipe.mask(d[recipe.key].value).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100 }
           )
         )
     )
@@ -283,15 +281,15 @@ describe 'CB', ->
         Recipe.find([recipe.key, recipe2.key])
           .then (d) ->
             d.should.be.an.instanceof Array
-            d[0].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
+            d[0].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100, docType: 'recipe' }
             Recipe.find([recipe.key, recipe2.key], true)
               .then (d) ->
                 d.should.be.an.instanceof Array
-                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, docType: 'recipe', popularity: 100 }
+                Recipe.mask(d[0]).should.eql { name: 'Pasta', origin: 'Italy', popularity: 100 }
                 Recipe.find([recipe.key, recipe2.key], false, true)
                   .then (d) ->
                     d.should.be.an.instanceof Object
-                    d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100 }
+                    d[recipe.key].should.eql { name: 'Pasta', origin: 'Italy', docKey: recipe.key, popularity: 100, docType: 'recipe' }
                     Recipe.find([recipe.key, recipe2.key], 'name,popularity', true)
                       .then (d) ->
                         d.should.be.an.instanceof Object

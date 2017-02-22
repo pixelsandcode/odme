@@ -10,7 +10,7 @@ module.exports = class Recipe extends Base
   source: db
   POSTFIX: ':recipe'
 
-  _mask: 'name,origin,popularity,docKey'
+  _mask: 'name,origin,popularity,docKey,docType'
   props: {
     name:
       schema: Joi.string()
@@ -27,6 +27,9 @@ module.exports = class Recipe extends Base
     time:
       schema: Joi.date()
       whiteList: true
+    maximum_likes:
+      schema: Joi.number()
+      whiteList: false
   }
 
   constructor: (key, doc, all)->

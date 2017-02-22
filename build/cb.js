@@ -11,7 +11,7 @@
 
   Promise = require('bluebird');
 
-  module.exports = function(client) {
+  module.exports = function(client, config) {
     var CB;
     return CB = (function(superClass) {
       extend(CB, superClass);
@@ -96,8 +96,10 @@
       };
 
       CB.prototype.maskOrData = function(data, mask) {
-        if (data.isBoom || (mask == null)) {
+        if (data.isBoom) {
           return data;
+        } else if (!mask) {
+          return this.mask(this._mask);
         } else {
           return this.mask(mask);
         }
@@ -119,17 +121,17 @@
         after = Promise.method(this["after" + type].bind(this));
         return before().then((function(_this) {
           return function(passed) {
-            if (passed) {
-              return beforeSave();
-            } else {
-              return passed;
+            if (passed !== true) {
+              throw passed;
             }
+            return beforeSave();
           };
         })(this)).then((function(_this) {
           return function(passed) {
             if (passed !== true) {
               throw passed;
             }
+            _this.validateDoc();
             return fn(mask);
           };
         })(this)).then((function(_this) {
@@ -161,7 +163,7 @@
               cas: _this.cas
             });
             return update.then(function(data) {
-              if (data.isBoom || (mask == null)) {
+              if (data.isBoom) {
                 return data;
               }
               return _this.source.get(_this.key, true).then(function(result) {
@@ -213,8 +215,8 @@
               return resolve(documents);
             });
           } else {
-            return resolve(_.map(_.map(data.hits.hits, "_source"), function(o) {
-              return o.doc;
+            return resolve(_.map(data.hits.hits, function(o) {
+              return o._source.doc;
             }));
           }
         });

@@ -117,15 +117,15 @@
     };
 
     Model.prototype.mask = function(mask) {
-      mask = mask != null ? typeof mask === 'string' ? mask : mask instanceof Array ? this._mask + "," + (mask.join(',')) : '*' : this._mask;
+      mask = mask != null ? typeof mask === 'string' ? mask : mask instanceof Array && mask.length > 0 ? this._mask + "," + (mask.join(',')) : '*' : this._mask;
       return this.constructor.mask(this.doc, mask);
     };
 
     Model.mask = function(doc, mask) {
       var keys;
       if (mask == null) {
-        mask = this.prototype.globalMask || (keys = _.keys(_.pickBy(this.prototype.props, function(i) {
-          return i;
+        mask = this.prototype.globalMask || (keys = _.keys(_.pickBy(this.prototype.props, function(prop) {
+          return prop.whiteList;
         })), this.prototype.globalMask = keys.join(','), this.prototype.globalMask);
       }
       return JsonMask(doc, mask);

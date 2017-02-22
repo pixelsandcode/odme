@@ -91,8 +91,10 @@ module.exports = (client, config) ->
     # @param {string|array|true}           mask  this works exactly same way mask(mask) method works
     #
     maskOrData: (data, mask)->
-      if data.isBoom || ! mask?
+      if data.isBoom
         data
+      else if ! mask
+        @mask @_mask
       else
         @mask mask
 
@@ -128,12 +130,11 @@ module.exports = (client, config) ->
       after = Promise.method(@["after#{type}"].bind(@))
       before()
         .then (passed) =>
-          if passed
-            beforeSave()
-          else
-            passed
+          throw passed if passed isnt true
+          beforeSave()
         .then (passed) =>
           throw passed if passed isnt true
+          @validateDoc()
           fn(mask)
         .then (data) =>
           @maskOrData(data, mask)
@@ -195,7 +196,7 @@ module.exports = (client, config) ->
             @source.replace @key, @doc, { cas: @cas }
         update
           .then (data) =>
-            return data if data.isBoom || ! mask?
+            return data if data.isBoom
             @source.get(@key, true)
               .then (result) =>
                 @doc = result
@@ -257,17 +258,23 @@ module.exports = (client, config) ->
 
     @handleElasticData: (data, options) ->
       new Promise (resolve) ->
+        if options?.keys_only is true
+          resolve _.map(data.hits.hits, "_id")
         if options?.couchbase_documents is true
-          @find(_.map(data.hits.hits, "_id"), options.mask)
+          @find(_.map(data.hits.hits, "_id"), options?.mask)
             .then(documents) ->
               resolve documents
         else
-          resolve _.map(_.map(data.hits.hits, "_source"), (o) -> return o.doc)
+          resolve _.map(data.hits.hits, (o) -> return o._source.doc)
 
     @search: (type, query, options) ->
-      query.index = config.name
+      query.index = config.index
       query.type = type
       query.search_type = options.searchType if options?.searchType?
+      unless client?
+        client = new es.Client
+          host: "#{config.host}:#{config.port}"
+          log: config.log
       client.search(query)
         .then(result) ->
           @handleElasticData(data, options)

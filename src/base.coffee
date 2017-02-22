@@ -237,7 +237,7 @@ module.exports = class Model
     mask = if mask?
       if typeof mask is 'string'
         mask
-      else if mask instanceof Array
+      else if mask instanceof Array and mask.length > 0
         "#{@_mask},#{mask.join(',')}"
       else
         '*'
@@ -257,7 +257,7 @@ module.exports = class Model
   @mask: (doc, mask) ->
     if ! mask?
       mask = @::globalMask || (
-        keys = _.keys _.pickBy( @::props, (i) -> i )
+        keys = _.keys _.pickBy( @::props, (prop) -> prop.whiteList )
         @::globalMask = keys.join ','
         @::globalMask
       )
