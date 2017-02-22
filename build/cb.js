@@ -11,7 +11,7 @@
 
   Promise = require('bluebird');
 
-  module.exports = function(client, config) {
+  module.exports = function(config, client) {
     var CB;
     return CB = (function(superClass) {
       extend(CB, superClass);
@@ -216,7 +216,7 @@
           return function(resolve) {
             var list, total;
             total = data.hits.total;
-            if (options.keys_only === true) {
+            if (options.keysOnly === true) {
               list = _.map(data.hits.hits, "_id");
               if (options.format === true) {
                 resolve({
@@ -226,7 +226,7 @@
               }
               resolve(list);
             }
-            if (options.couchbase_documents === true) {
+            if (options.couchbaseDocuments === true) {
               return _this.find(_.map(data.hits.hits, "_id"), options.mask).then(function(documents) {
                 if (options.format === true) {
                   resolve({
