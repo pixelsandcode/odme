@@ -12,6 +12,8 @@ es = require 'elasticsearch'
 module.exports = (@config, @client) ->
   return class CB extends Base
 
+    source: config
+
     # ## Get
     #
     # Get the existing doc by key and instantiate an ODME object. The returned object has `.is_new` property set to `false`. If you don't need the ODME object and only need the doc to work with, you should pass `true` as the second parameter which will return the raw Couchbase Document and it's slightly faster.

@@ -24,6 +24,8 @@
         return CB.__super__.constructor.apply(this, arguments);
       }
 
+      CB.prototype.source = config;
+
       CB.get = function(key, raw) {
         var make;
         if (_.isEmpty(key || _.isNaN(key))) {

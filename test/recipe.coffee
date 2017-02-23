@@ -7,7 +7,6 @@ db = new require('puffer') { host: 'localhost', name: 'test' }, true
 
 module.exports = class Recipe extends Base
 
-  source: db
   POSTFIX: ':recipe'
 
   _mask: 'name,origin,popularity,docKey,docType'

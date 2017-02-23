@@ -1,7 +1,8 @@
 should  = require('chai').should()
 chai = require('chai')
 Base   = require('../build/main').Base
-CB = require('../build/cb')({host: 'localhost', port: 9200, index: 'test'})
+db = new require('puffer') { host: 'localhost', name: 'test' }, true
+CB = require('../build/cb')({host: 'localhost', port: 9200, index: 'test', source: db})
 User    = require('./user')
 Recipe    = require('./recipe')
 Wrong = require('./wrong')
