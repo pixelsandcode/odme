@@ -11,7 +11,7 @@ module.exports = class Recipe extends Base
   POSTFIX: ':recipe'
 
   _mask: 'name,origin,popularity,docKey,docType'
-  props: {
+  props: -> {
     name:
       schema: Joi.string()
       whiteList: true

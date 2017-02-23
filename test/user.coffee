@@ -5,15 +5,15 @@ class Model extends Base
 
   _key: ->
     id = 'fixedID'
-    if @PREFIX == false
+    if @PREFIX() == false
       "#{id}"
     else
-      "#{@PREFIX}_#{id}"
+      "#{@PREFIX()}_#{id}"
 
 module.exports = class User extends Model
 
-  PREFIX: 'u'
-  props: {
+  PREFIX: -> 'u'
+  props: -> {
     name:
       schema: Joi.string()
       whiteList: true

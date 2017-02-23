@@ -75,12 +75,12 @@ describe 'Base', ->
 
   it "should get a prefix as class name automatically", ->
     book = new BaseBook {}
-    book.should.have.property('PREFIX').that.equal 'book'
+    book.PREFIX().should.eq 'book'
     book.key.should.string "book"
 
   it "should have prefix set before hand", ->
     user = new User {}
-    user.should.have.property('PREFIX').that.equal 'u'
+    user.PREFIX().should.eq 'u'
     user.key.should.equal "u_fixedID"
 
   it 'should have @docType same as class name and set @doc.docType even if @doc was empty', ->

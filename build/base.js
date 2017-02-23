@@ -14,11 +14,15 @@
   module.exports = Model = (function() {
     Model.prototype.source = null;
 
-    Model.prototype.PREFIX = null;
+    Model.prototype.PREFIX = function() {
+      return null;
+    };
 
     Model.prototype.docType = null;
 
-    Model.prototype.props = [];
+    Model.prototype.props = function() {
+      return [];
+    };
 
     Model.prototype.propsSchema = Joi.object().pattern(/.*/, Joi.object().min(1).keys({
       schema: Joi.object().min(1).required(),
@@ -34,17 +38,19 @@
       if (typeof this.key !== 'string' && this.key) {
         throw "key should be a string";
       }
-      if (typeof this.PREFIX !== 'string' && this.PREFIX) {
+      if (typeof this.PREFIX() !== 'string' && this.PREFIX()) {
         throw "prefix must be a string";
       }
-      if (this.PREFIX == null) {
-        this.PREFIX = this.constructor.name.toLowerCase();
+      if (this.PREFIX() == null) {
+        this.PREFIX = function() {
+          return this.constructor.name.toLowerCase();
+        };
       }
       if (this.docType == null) {
         this.docType = this.constructor.name.toLowerCase();
       }
       this.validateProps();
-      this._keys = _.keys(_.pickBy(this.props, function(prop) {
+      this._keys = _.keys(_.pickBy(this.props(), function(prop) {
         return prop.whiteList;
       }));
       this.setterMask = this._keys.join(',');
@@ -70,7 +76,7 @@
     }
 
     Model.prototype.validateProps = function() {
-      return Joi.validate(this.props, this.propsSchema, function(err) {
+      return Joi.validate(this.props(), this.propsSchema, function(err) {
         if (err) {
           throw {
             msg: 'the props field isnt valid',
@@ -82,8 +88,8 @@
     };
 
     Model.prototype.validateDoc = function() {
-      var props;
-      _.extend(this.props, {
+      var extended_props, props;
+      extended_props = _.extend(this.props(), {
         docType: {
           schema: Joi.string().required(),
           whiteList: false
@@ -94,7 +100,7 @@
         }
       });
       props = {};
-      _.each(this.props, function(value, key) {
+      _.each(extended_props, function(value, key) {
         return props[key] = value.schema;
       });
       return Joi.validate(this.doc, props, function(err) {
@@ -109,10 +115,10 @@
 
     Model.prototype._key = function(id) {
       id || (id = ShortID.generate());
-      if (this.PREFIX === false) {
+      if (this.PREFIX() === false) {
         return "" + id;
       } else {
-        return this.PREFIX + "_" + id;
+        return (this.PREFIX()) + "_" + id;
       }
     };
 
@@ -124,7 +130,7 @@
     Model.mask = function(doc, mask) {
       var keys;
       if (mask == null) {
-        mask = this.prototype.globalMask || (keys = _.keys(_.pickBy(this.prototype.props, function(prop) {
+        mask = this.prototype.globalMask || (keys = _.keys(_.pickBy(this.prototype.props(), function(prop) {
           return prop.whiteList;
         })), this.prototype.globalMask = keys.join(','), this.prototype.globalMask);
       }

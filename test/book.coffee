@@ -3,7 +3,7 @@ Joi  = require 'joi'
 
 module.exports = class Book extends Base
 
-  props: {
+  props: -> {
     name:
       schema: Joi.string()
       whiteList: true

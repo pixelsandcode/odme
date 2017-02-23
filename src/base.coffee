@@ -37,7 +37,7 @@ module.exports = class Model
   #
   # PREFIX is used in key generation method (all ODME objects have a key). If you do not set this property, the key's prefix will be same as class name. If you want to customize it set `PREFIX` to what you like. In case you do not want prefix in your keys, set it to **false**.
   #
-  PREFIX: null
+  PREFIX: -> null
 
   # ## Document type
   #
@@ -74,7 +74,7 @@ module.exports = class Model
   #   user.doc.email =  'jack@gmail.com' # Extend your document with more properties
   #   user.mask() # { name: 'Jack Black', age: 30 }
   #
-  props: []
+  props: -> []
 
   # ## Properties schema
   #
@@ -150,11 +150,12 @@ module.exports = class Model
   constructor: (@doc, @key) ->
     @is_new = true
     throw "key should be a string" if typeof @key isnt 'string' and @key
-    throw "prefix must be a string" if typeof @PREFIX isnt 'string' and @PREFIX
-    @PREFIX = @constructor.name.toLowerCase() if ! @PREFIX?
+    throw "prefix must be a string" if typeof @PREFIX() isnt 'string' and @PREFIX()
+    if ! @PREFIX()?
+      @PREFIX = () -> @constructor.name.toLowerCase()
     @docType = @constructor.name.toLowerCase() if ! @docType?
     @validateProps()
-    @_keys = _.keys(_.pickBy(@props, (prop) -> return prop.whiteList))
+    @_keys = _.keys(_.pickBy(@props(), (prop) -> return prop.whiteList))
     @setterMask = @_keys.join ','
     if ! @_mask?
       @_mask = @setterMask
@@ -169,12 +170,12 @@ module.exports = class Model
     @validateDoc()
 
   validateProps: () ->
-    Joi.validate @props, @propsSchema, (err) ->
+    Joi.validate @props(), @propsSchema, (err) ->
       throw {msg: 'the props field isnt valid', err} if err
       return yes
 
   validateDoc: () ->
-    _.extend @props, {
+    extended_props = _.extend @props(), {
       docType:
         schema: Joi.string().required()
         whiteList: false
@@ -183,7 +184,7 @@ module.exports = class Model
         whiteList: false
     }
     props = {}
-    _.each @props, (value, key) ->
+    _.each extended_props, (value, key) ->
       props[key] = value.schema
     Joi.validate @doc, props, (err) ->
       throw {msg: 'doc is not valid', err} if err
@@ -197,10 +198,10 @@ module.exports = class Model
   #
   _key: (id) ->
     id ||= ShortID.generate()
-    if @PREFIX == false
+    if @PREFIX() == false
       "#{id}"
     else
-      "#{@PREFIX}_#{id}"
+      "#{@PREFIX()}_#{id}"
 
   # ## Mask Output
   #
@@ -257,7 +258,7 @@ module.exports = class Model
   @mask: (doc, mask) ->
     if ! mask?
       mask = @::globalMask || (
-        keys = _.keys _.pickBy( @::props, (prop) -> prop.whiteList )
+        keys = _.keys _.pickBy( @::props(), (prop) -> prop.whiteList )
         @::globalMask = keys.join ','
         @::globalMask
       )

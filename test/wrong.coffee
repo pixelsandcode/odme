@@ -3,8 +3,8 @@ Joi  = require 'joi'
 
 module.exports = class Wrong extends Base
 
-  PREFIX: [[]]
-  props: {
+  PREFIX: -> []
+  props: -> {
     name: 'bluh'
     age: 2
     city: {}
