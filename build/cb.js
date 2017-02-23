@@ -24,7 +24,7 @@
         return CB.__super__.constructor.apply(this, arguments);
       }
 
-      CB.prototype.source = config;
+      CB.prototype.source = config.source;
 
       CB.get = function(key, raw) {
         var make;

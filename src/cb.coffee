@@ -12,7 +12,7 @@ es = require 'elasticsearch'
 module.exports = (@config, @client) ->
   return class CB extends Base
 
-    source: config
+    source: config.source
 
     # ## Get
     #
