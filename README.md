@@ -37,15 +37,15 @@ class User extends Base
     # { 
     #   name: 'Arash',
     #   age: 32,
-    #   doc_type: 'user',
-    #   doc_key: 'user_mJLGt-e6' 
+    #   docType: 'user',
+    #   docKey: 'user_mJLGt-e6' 
     # }
   console.log user.mask()
     # { 
     #   name: 'Arash',
     #   age: 32,
-    #   doc_type: 'user',
-    #   doc_key: 'user_mJLGt-e6' 
+    #   docType: 'user',
+    #   docKey: 'user_mJLGt-e6' 
     # }
 
   user.doc.city = 'Tehran'
@@ -54,15 +54,15 @@ class User extends Base
     #   name: 'Arash',
     #   age: 32,
     #   city: 'Tehran',
-    #   doc_type: 'user',
-    #   doc_key: 'user_mJLGt-e6' 
+    #   docType: 'user',
+    #   docKey: 'user_mJLGt-e6' 
     # }
   console.log user.mask()
     # { 
     #   name: 'Arash',
     #   age: 32,
-    #   doc_type: 'user',
-    #   doc_key: 'user_mJLGt-e6' 
+    #   docType: 'user',
+    #   docKey: 'user_mJLGt-e6' 
     # }
   console.log user.mask('name,city')
     # { 
