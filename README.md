@@ -20,9 +20,15 @@ Base = require('odme').Base
 class User extends Base
   
   props: {
-    name: true
-    age: true
-    total_logins: false
+    name:
+      schema: Joi.string()
+      whiteList: true
+    age: 
+      schema: Joi.number().min(0)
+      whiteList: true
+    total_logins: 
+      schema: Joi.number().min(0)
+      whiteList: false
   }
 
   user = new User { name: 'Arash', age: 32, city: 'Sydney', total_logins:10 }
@@ -75,8 +81,12 @@ You can extend Base class based on your adapters and set a library as `source` t
   class Recipe extends Base
     source: db
     props: {
-      name: true,
-      ingredients: true
+      name: 
+        schema: Joi.string(),
+        whiteList: true
+      ingredients: 
+        schema: Joi.array().items(Joi.string())
+        whiteList: true
     }
   
   recipe = new Recipe { name: 'Pasta', ingredients: ['pasta', 'basil', 'olive oil'] }
