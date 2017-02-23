@@ -1,5 +1,6 @@
 Base = require './base'
 Boom = require 'boom'
+JsonMask = require 'json-mask'
 _    = require 'lodash'
 Promise = require 'bluebird'
 es = require 'elasticsearch'
@@ -9,7 +10,7 @@ es = require 'elasticsearch'
 # This Model class is using puffer for CRUDing. It's recommended to read [puffer's documentation](https://www.npmjs.com/package/puffer) first.
 # @param {object} this is the port, host, index name of elasticsearch and source of base.
 # @param {object} this is the elastic search client. if client is not passed one is created from config
-module.exports = (@config, @client) ->
+module.exports = (config, client) ->
   return class CB extends Base
 
     source: config.source
@@ -277,7 +278,7 @@ module.exports = (@config, @client) ->
               resolve {total, list: documents} if options.format is true
               resolve documents
         else
-          list = _.map(data.hits.hits, (o) -> return o._source.doc)
+          list = _.map(data.hits.hits, (o) -> return JsonMask(o._source.doc, options.mask))
           resolve {total, list} if options.format is true
           resolve list
 

@@ -1,5 +1,5 @@
 (function() {
-  var Base, Boom, Promise, _, es,
+  var Base, Boom, JsonMask, Promise, _, es,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
@@ -7,16 +7,16 @@
 
   Boom = require('boom');
 
+  JsonMask = require('json-mask');
+
   _ = require('lodash');
 
   Promise = require('bluebird');
 
   es = require('elasticsearch');
 
-  module.exports = function(config1, client1) {
+  module.exports = function(config, client) {
     var CB;
-    this.config = config1;
-    this.client = client1;
     return CB = (function(superClass) {
       extend(CB, superClass);
 
@@ -244,7 +244,7 @@
               });
             } else {
               list = _.map(data.hits.hits, function(o) {
-                return o._source.doc;
+                return JsonMask(o._source.doc, options.mask);
               });
               if (options.format === true) {
                 resolve({
@@ -259,11 +259,10 @@
       };
 
       CB.search = function(type, query, options) {
-        var client;
         if (options == null) {
           options = {};
         }
-        if (typeof config === "undefined" || config === null) {
+        if (config == null) {
           throw 'config cannot be empty';
         }
         query.index = config.index;
@@ -271,7 +270,7 @@
         if (options.searchType != null) {
           query.search_type = options.searchType;
         }
-        if (typeof client === "undefined" || client === null) {
+        if (client == null) {
           client = new es.Client({
             host: config.host + ":" + config.port
           });

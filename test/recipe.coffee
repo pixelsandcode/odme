@@ -1,6 +1,7 @@
 ShortID = require 'shortid'
 Boom = require 'boom'
-Base = require('../build/main').CB({})
+db = new require('puffer') { host: 'localhost', name: 'test' }, true
+Base = require('../build/main').CB({host: 'localhost', port: 9200, index: 'test', source: db})
 Joi = require('joi')
 
 db = new require('puffer') { host: 'localhost', name: 'test' }, true

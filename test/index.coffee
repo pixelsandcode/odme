@@ -1,15 +1,14 @@
 should  = require('chai').should()
 chai = require('chai')
 Base   = require('../build/main').Base
-db = new require('puffer') { host: 'localhost', name: 'test' }, true
-CB = require('../build/cb')({host: 'localhost', port: 9200, index: 'test', source: db})
+CB = require('../build/cb')({})
 User    = require('./user')
 Recipe    = require('./recipe')
 Wrong = require('./wrong')
 BaseBook = require('./book')
 esTestData = require('./es_test_data.json')
 Promise = require 'bluebird'
-request = require('request-promise')
+request = require('request')
 
 
 describe 'Base', ->
@@ -356,7 +355,7 @@ describe 'CB', ->
         obj.is_new.should.be.equal false
 
 describe 'ES', ->
-  it "should query ES and return data",  ->
+  it "should query ES and return data", (done) ->
     this.timeout(2000)
     dataString = '{
       "doc": {
@@ -369,19 +368,46 @@ describe 'ES', ->
       method: 'POST',
       body: dataString
     }
-    request options
-      .then () ->
-        query =
-          body:
-            query:
-              match_all: {}
-        search = () ->
-          Recipe.search('recipe', query)
-            .then (data) ->
-              console.log "HEREEEEEEEEEEEEE", data
-              data.length.should.eq 1
-              data[0].name.should.eq 'Pasta'
-        setTimeout(search, 1000)
+    request options, () ->
+      query =
+        body:
+          query:
+            match_all: {}
+      search = () ->
+        Recipe.search('recipe', query)
+          .then (data) ->
+            data.length.should.eq 1
+            data[0].name.should.eq 'Pasta'
+            done()
+      setTimeout(search, 1000)
+
+  it "should query ES and return masked data", (done) ->
+    this.timeout(1500)
+    dataString = '{
+      "doc": {
+        "name" : "Pasta",
+        "origin" : "italy"
+      }
+    }'
+    options = {
+      url: 'http://localhost:9200/test/recipe/1',
+      method: 'POST',
+      body: dataString
+    }
+    request options, (err) ->
+      throw err if err
+      query =
+        body:
+          query:
+            match_all: {}
+      search = () ->
+        Recipe.search('recipe', query, {mask: 'name'})
+          .then (data) ->
+            data.length.should.eq 1
+            data[0].name.should.eq 'Pasta'
+            should.not.exist(data[0].origin)
+            done()
+      setTimeout(search, 1000)
 
   it "should get the results from ES directly", ->
     CB.handleElasticData(esTestData)
@@ -421,6 +447,20 @@ describe 'ES', ->
           .then (result) ->
             result.length.should.eq 2
             result[0].docKey.should.eq recipe.key
+
+  it "should get the keys from couchbase and mask", ->
+    recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe2.create()
+    recipe = new Recipe { name: 'Pasta', origin: 'Italy' }
+    recipe.create()
+      .then () ->
+        esTestData.hits.hits[0]._id = recipe.key
+        esTestData.hits.hits[1]._id = recipe2.key
+        Recipe.handleElasticData(esTestData, {couchbaseDocuments: true, mask: 'name,docKey'})
+          .then (result) ->
+            result.length.should.eq 2
+            result[0].docKey.should.eq recipe.key
+            should.not.exist result[0].origin
 
   it "should get the keys from couchbase and format", ->
     recipe2 = new Recipe { name: 'Pasta', origin: 'Italy' }
