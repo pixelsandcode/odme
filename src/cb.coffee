@@ -67,7 +67,7 @@ module.exports = (config, client) ->
       return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
       @::source.get(key, true).then (d)=>
         return d if d.isBoom || (raw? && raw == true)
-        mask = (@::_mask||null)
+        mask = (@::_mask()||null)
         mask = raw if typeof raw == 'string'
         if key not instanceof Array
           if asObject? and asObject
@@ -99,7 +99,7 @@ module.exports = (config, client) ->
       if data.isBoom
         data
       else if ! mask
-        @mask @_mask
+        @mask @_mask()
       else
         @mask mask
 

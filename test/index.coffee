@@ -107,7 +107,7 @@ describe 'Base', ->
 
   it "should have two independent masks as setter and getter", ->
     class Book extends BaseBook
-      _mask: 'name,pages'
+      _mask: -> 'name,pages'
 
     book = new Book { name: 'NodeJS ODM', pages: 100 }
     book.doc.should.eql { name: 'NodeJS ODM', docType: 'book', docKey: book.key, pages: 100 }

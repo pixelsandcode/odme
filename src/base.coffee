@@ -100,7 +100,7 @@ module.exports = class Model
   #   user = new User { name: 'Jack Black', age: 30, last_login: '2015-01-01' }
   #   user.mask() # { name: 'Jack Black', last_login: '2015-01-01' }
   #
-  _mask: null
+  _mask: -> null
 
   # ## Model Constructor
   #
@@ -157,9 +157,8 @@ module.exports = class Model
     @validateProps()
     @_keys = _.keys(_.pickBy(@props(), (prop) -> return prop.whiteList))
     @setterMask = @_keys.join ','
-    if ! @_mask?
-      @_mask = @setterMask
-      @_mask += ",docType,docKey"
+    if ! @_mask()?
+      @_mask = -> @setterMask + ",docType,docKey"
     @doc ?= {}
     @key ?= @_key()
     @key = _.toString @key
@@ -239,11 +238,11 @@ module.exports = class Model
       if typeof mask is 'string'
         mask
       else if mask instanceof Array and mask.length > 0
-        "#{@_mask},#{mask.join(',')}"
+        "#{@_mask()},#{mask.join(',')}"
       else
         '*'
     else
-      @_mask
+      @_mask()
     @constructor.mask @doc, mask
 
   # ## Mask Class Method

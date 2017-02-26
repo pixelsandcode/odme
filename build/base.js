@@ -29,7 +29,9 @@
       whiteList: Joi.boolean()["default"](false)
     })).min(1);
 
-    Model.prototype._mask = null;
+    Model.prototype._mask = function() {
+      return null;
+    };
 
     function Model(doc1, key1) {
       this.doc = doc1;
@@ -54,9 +56,10 @@
         return prop.whiteList;
       }));
       this.setterMask = this._keys.join(',');
-      if (this._mask == null) {
-        this._mask = this.setterMask;
-        this._mask += ",docType,docKey";
+      if (this._mask() == null) {
+        this._mask = function() {
+          return this.setterMask + ",docType,docKey";
+        };
       }
       if (this.doc == null) {
         this.doc = {};
@@ -123,7 +126,7 @@
     };
 
     Model.prototype.mask = function(mask) {
-      mask = mask != null ? typeof mask === 'string' ? mask : mask instanceof Array && mask.length > 0 ? this._mask + "," + (mask.join(',')) : '*' : this._mask;
+      mask = mask != null ? typeof mask === 'string' ? mask : mask instanceof Array && mask.length > 0 ? (this._mask()) + "," + (mask.join(',')) : '*' : this._mask();
       return this.constructor.mask(this.doc, mask);
     };
 

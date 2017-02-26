@@ -10,7 +10,7 @@ module.exports = class Recipe extends Base
 
   POSTFIX: ':recipe'
 
-  _mask: 'name,origin,popularity,docKey,docType'
+  _mask: -> 'name,origin,popularity,docKey,docType'
   props: -> {
     name:
       schema: Joi.string()

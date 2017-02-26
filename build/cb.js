@@ -70,7 +70,7 @@
             if (d.isBoom || ((raw != null) && raw === true)) {
               return d;
             }
-            mask = _this.prototype._mask || null;
+            mask = _this.prototype._mask() || null;
             if (typeof raw === 'string') {
               mask = raw;
             }
@@ -105,7 +105,7 @@
         if (data.isBoom) {
           return data;
         } else if (!mask) {
-          return this.mask(this._mask);
+          return this.mask(this._mask());
         } else {
           return this.mask(mask);
         }
