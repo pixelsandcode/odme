@@ -278,7 +278,9 @@ module.exports = (config, client) ->
               resolve {total, list: documents} if options.format is true
               resolve documents
         else
-          list = _.map(data.hits.hits, (o) -> return JsonMask(o._source.doc, options.mask))
+          list = _.map data.hits.hits, (o) -> 
+            o._source.doc.docKey = o._id
+            return JsonMask(o._source.doc, options.mask)
           resolve {total, list} if options.format is true
           resolve list
 
