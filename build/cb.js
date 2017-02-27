@@ -244,6 +244,7 @@
               });
             } else {
               list = _.map(data.hits.hits, function(o) {
+                o._source.doc.docKey = o._id;
                 return JsonMask(o._source.doc, options.mask);
               });
               if (options.format === true) {
