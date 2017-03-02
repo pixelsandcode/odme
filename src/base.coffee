@@ -166,7 +166,6 @@ module.exports = class Model
     if @doc?
       @doc.docType = @docType
       @doc.docKey = @key
-    @validateDoc()
 
   validateProps: () ->
     Joi.validate @props(), @propsSchema, (err) ->

@@ -59,9 +59,6 @@ describe 'Base', ->
   it "should return an error for invalid prop", ->
     chai.expect(() -> new Wrong).to.throw()
 
-  it "should return an error for invalid doc", ->
-    chai.expect(() -> new User {name: 1, age: "hello"}).to.throw()
-
   it "should have {} @doc and default @key on creation", ->
     user = new User
     user.should.have.property('key').that.not.equal null

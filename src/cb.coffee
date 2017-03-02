@@ -34,7 +34,7 @@ module.exports = (config, client) ->
       return Promise.resolve( if _.isArray(key) then [] else null) if _.isEmpty key or _.isNaN key
       raw ||= false
       make = (key, document) =>
-        instance = new @ document, key
+        instance = new @ {}, key
         instance.doc = document.value
         instance.cas = document.cas
         instance.key = key
@@ -278,7 +278,7 @@ module.exports = (config, client) ->
               resolve {total, list: documents} if options.format is true
               resolve documents
         else
-          list = _.map data.hits.hits, (o) -> 
+          list = _.map data.hits.hits, (o) ->
             o._source.doc.docKey = o._id
             return JsonMask(o._source.doc, options.mask)
           resolve {total, list} if options.format is true

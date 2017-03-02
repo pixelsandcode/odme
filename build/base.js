@@ -75,7 +75,6 @@
         this.doc.docType = this.docType;
         this.doc.docKey = this.key;
       }
-      this.validateDoc();
     }
 
     Model.prototype.validateProps = function() {

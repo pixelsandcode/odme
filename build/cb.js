@@ -35,7 +35,7 @@
         make = (function(_this) {
           return function(key, document) {
             var instance;
-            instance = new _this(document, key);
+            instance = new _this({}, key);
             instance.doc = document.value;
             instance.cas = document.cas;
             instance.key = key;
