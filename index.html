@@ -14,9 +14,15 @@
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Base</span></span>
 
   <span class="hljs-attribute">props</span>: {
-    <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>
-    <span class="hljs-attribute">age</span>: <span class="hljs-literal">true</span>
-    <span class="hljs-attribute">total_logins</span>: <span class="hljs-literal">false</span>
+    <span class="hljs-attribute">name</span>:
+      <span class="hljs-attribute">schema</span>: Joi.string()
+      <span class="hljs-attribute">whiteList</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attribute">age</span>: 
+      <span class="hljs-attribute">schema</span>: Joi.number().min(<span class="hljs-number">0</span>)
+      <span class="hljs-attribute">whiteList</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attribute">total_logins</span>: 
+      <span class="hljs-attribute">schema</span>: Joi.number().min(<span class="hljs-number">0</span>)
+      <span class="hljs-attribute">whiteList</span>: <span class="hljs-literal">false</span>
   }
 
   user = <span class="hljs-keyword">new</span> User { <span class="hljs-attribute">name</span>: <span class="hljs-string">'Arash'</span>, <span class="hljs-attribute">age</span>: <span class="hljs-number">32</span>, <span class="hljs-attribute">city</span>: <span class="hljs-string">'Sydney'</span>, <span class="hljs-attribute">total_logins</span>:<span class="hljs-number">10</span> }
@@ -25,15 +31,15 @@
     <span class="hljs-comment"># { </span>
     <span class="hljs-comment">#   name: 'Arash',</span>
     <span class="hljs-comment">#   age: 32,</span>
-    <span class="hljs-comment">#   doc_type: 'user',</span>
-    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment">#   docType: 'user',</span>
+    <span class="hljs-comment">#   docKey: 'user_mJLGt-e6' </span>
     <span class="hljs-comment"># }</span>
   <span class="hljs-built_in">console</span>.log user.mask()
     <span class="hljs-comment"># { </span>
     <span class="hljs-comment">#   name: 'Arash',</span>
     <span class="hljs-comment">#   age: 32,</span>
-    <span class="hljs-comment">#   doc_type: 'user',</span>
-    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment">#   docType: 'user',</span>
+    <span class="hljs-comment">#   docKey: 'user_mJLGt-e6' </span>
     <span class="hljs-comment"># }</span>
 
   user.doc.city = <span class="hljs-string">'Tehran'</span>
@@ -42,15 +48,15 @@
     <span class="hljs-comment">#   name: 'Arash',</span>
     <span class="hljs-comment">#   age: 32,</span>
     <span class="hljs-comment">#   city: 'Tehran',</span>
-    <span class="hljs-comment">#   doc_type: 'user',</span>
-    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment">#   docType: 'user',</span>
+    <span class="hljs-comment">#   docKey: 'user_mJLGt-e6' </span>
     <span class="hljs-comment"># }</span>
   <span class="hljs-built_in">console</span>.log user.mask()
     <span class="hljs-comment"># { </span>
     <span class="hljs-comment">#   name: 'Arash',</span>
     <span class="hljs-comment">#   age: 32,</span>
-    <span class="hljs-comment">#   doc_type: 'user',</span>
-    <span class="hljs-comment">#   doc_key: 'user_mJLGt-e6' </span>
+    <span class="hljs-comment">#   docType: 'user',</span>
+    <span class="hljs-comment">#   docKey: 'user_mJLGt-e6' </span>
     <span class="hljs-comment"># }</span>
   <span class="hljs-built_in">console</span>.log user.mask(<span class="hljs-string">'name,city'</span>)
     <span class="hljs-comment"># { </span>
@@ -65,8 +71,12 @@
   <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Recipe</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Base</span></span>
     <span class="hljs-attribute">source</span>: db
     <span class="hljs-attribute">props</span>: {
-      <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>,
-      <span class="hljs-attribute">ingredients</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">name</span>: 
+        <span class="hljs-attribute">schema</span>: Joi.string(),
+        <span class="hljs-attribute">whiteList</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">ingredients</span>: 
+        <span class="hljs-attribute">schema</span>: Joi.array().items(Joi.string())
+        <span class="hljs-attribute">whiteList</span>: <span class="hljs-literal">true</span>
     }
 
   recipe = <span class="hljs-keyword">new</span> Recipe { <span class="hljs-attribute">name</span>: <span class="hljs-string">'Pasta'</span>, <span class="hljs-attribute">ingredients</span>: [<span class="hljs-string">'pasta'</span>, <span class="hljs-string">'basil'</span>, <span class="hljs-string">'olive oil'</span>] }
