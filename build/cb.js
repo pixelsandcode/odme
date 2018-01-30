@@ -218,6 +218,9 @@
         if (options == null) {
           options = {};
         }
+        if (options.raw) {
+          return data;
+        }
         return new Promise((function(_this) {
           return function(resolve) {
             var list, total;

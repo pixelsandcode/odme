@@ -266,6 +266,7 @@ module.exports = (config, client) ->
     # @param {string} return result of Elastic query
     # @param {options} the same options that is passed to @search method
     @handleElasticData: (data, options = {}) ->
+      return data if options.raw
       new Promise (resolve) =>
         total = data.hits.total
         if options.keysOnly is true
@@ -288,7 +289,7 @@ module.exports = (config, client) ->
     #
     # @param {string} which type of document should elastic query
     # @param {object} the query itself
-    # @param {object} there many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB
+    # @param {object} there many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB. If raw is passed as true then actual elastic response is returned
     @search: (type, query, options = {}) ->
       throw 'config cannot be empty' unless config?
       query.index = config.index
