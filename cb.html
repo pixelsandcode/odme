@@ -186,6 +186,7 @@ recipe.update(true).then (d) -&gt; console.log d</code></pre></div></div><div cl
 <li><p><strong>the must be an options.</strong><br/>(same options that is passed to @search method)</p>
 </li>
 </ul></div></div><div class="code"><div class="wrapper">    <span class="hljs-property">@handleElasticData</span>: <span class="hljs-function"><span class="hljs-params">(data, options = {})</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> data <span class="hljs-keyword">if</span> options.raw
       <span class="hljs-keyword">new</span> Promise (resolve) =&gt;
         total = data.hits.total
         <span class="hljs-keyword">if</span> options.keysOnly <span class="hljs-keyword">is</span> <span class="hljs-literal">true</span>
@@ -209,7 +210,7 @@ recipe.update(true).then (d) -&gt; console.log d</code></pre></div></div><div cl
 </li>
 <li><p><strong>the must be an object.</strong><br/>(query itself)</p>
 </li>
-<li><p><strong>there must be an object.</strong><br/>(many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB)</p>
+<li><p><strong>there must be an object.</strong><br/>(many field you can set in options field: searchType specifies the search type that ES should use for example count, keysOnly will return only the doc_keys of the documents, format will return the documents and the total number of them, setting couchbaseDocuments to true will return get the list from couchbase, mask will mask the result of data that is returned by CB. If raw is passed as true then actual elastic response is returned)</p>
 </li>
 </ul></div></div><div class="code"><div class="wrapper">    <span class="hljs-property">@search</span>: <span class="hljs-function"><span class="hljs-params">(type, query, options = {})</span> -&gt;</span>
       <span class="hljs-keyword">throw</span> <span class="hljs-string">'config cannot be empty'</span> <span class="hljs-keyword">unless</span> config?

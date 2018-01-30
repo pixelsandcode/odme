@@ -13,83 +13,13 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "commentsOnly": true,
           "name": "Markdown"
         },
-        "sourcePath": "/mnt/c/Users/Amirali/Projects/odme/README.md",
+        "sourcePath": "/Users/arash/Projects/r-and-d/npms/odme/README.md",
         "projectPath": "README.md",
         "targetPath": "index",
         "pageTitle": "index",
-        "firstHeader": {
-          "type": "heading",
-          "data": {
-            "level": 1,
-            "title": "odme",
-            "slug": "odme",
-            "isFileHeader": true
-          },
-          "depth": 1,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "How to use",
-                "slug": "how-to-use"
-              },
-              "depth": 2
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "How to read this doc?",
-                "slug": "how-to-read-this-doc"
-              },
-              "depth": 2,
-              "children": [
-                {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "Need more?",
-                    "slug": "need-more"
-                  },
-                  "depth": 3
-                }
-              ]
-            }
-          ]
-        },
-        "title": "odme"
+        "title": "index"
       },
-      "depth": 1,
-      "outline": [
-        {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "How to use",
-            "slug": "how-to-use"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "How to read this doc?",
-            "slug": "how-to-read-this-doc"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Need more?",
-                "slug": "need-more"
-              },
-              "depth": 3
-            }
-          ]
-        }
-      ]
+      "depth": 1
     }, {
       "type": "file",
       "data": {
@@ -104,131 +34,13 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "foldPrefix": "^",
           "name": "CoffeeScript"
         },
-        "sourcePath": "/mnt/c/Users/Amirali/Projects/odme/src/base.coffee",
+        "sourcePath": "/Users/arash/Projects/r-and-d/npms/odme/src/base.coffee",
         "projectPath": "src/base.coffee",
         "targetPath": "base",
         "pageTitle": "base",
         "title": "base"
       },
-      "depth": 1,
-      "outline": [
-        {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Source Adapter",
-            "slug": "source-adapter"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "PREFIX",
-            "slug": "prefix"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Document type",
-            "slug": "document-type"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Properties",
-            "slug": "properties"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Properties schema",
-            "slug": "properties-schema"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Default Mask",
-            "slug": "default-mask"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Model Constructor",
-            "slug": "model-constructor"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Blank document object with new key",
-                "slug": "blank-document-object-with-new-key"
-              },
-              "depth": 3
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Document object with new key",
-                "slug": "document-object-with-new-key"
-              },
-              "depth": 3
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Blank document object with a key",
-                "slug": "blank-document-object-with-a-key"
-              },
-              "depth": 3
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Property Filtering",
-                "slug": "property-filtering"
-              },
-              "depth": 3
-            }
-          ]
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Default key generator for doc",
-            "slug": "default-key-generator-for-doc"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Mask Output",
-            "slug": "mask-output"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Mask Class Method",
-            "slug": "mask-class-method"
-          },
-          "depth": 2
-        }
-      ]
+      "depth": 1
     }, {
       "type": "file",
       "data": {
@@ -243,155 +55,13 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "foldPrefix": "^",
           "name": "CoffeeScript"
         },
-        "sourcePath": "/mnt/c/Users/Amirali/Projects/odme/src/cb.coffee",
+        "sourcePath": "/Users/arash/Projects/r-and-d/npms/odme/src/cb.coffee",
         "projectPath": "src/cb.coffee",
         "targetPath": "cb",
         "pageTitle": "cb",
         "title": "cb"
       },
-      "depth": 1,
-      "outline": [
-        {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Get",
-            "slug": "get"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Find",
-            "slug": "find"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Mask or Data",
-            "slug": "mask-or-data"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Create",
-            "slug": "create"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Handles callbacks",
-            "slug": "handles-callbacks"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Update",
-            "slug": "update"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Get the document and update it",
-                "slug": "get-the-document-and-update-it"
-              },
-              "depth": 3
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Update a document using a new ODME object",
-                "slug": "update-a-document-using-a-new-odme-object"
-              },
-              "depth": 3
-            }
-          ]
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Delete",
-            "slug": "delete"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Before update Callback",
-            "slug": "before-update-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Before create Callback",
-            "slug": "before-create-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Before save Callback",
-            "slug": "before-save-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "After Create Callback",
-            "slug": "after-create-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "After Update Callback",
-            "slug": "after-update-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "After Save Callback",
-            "slug": "after-save-callback"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Handle elasticsearch data",
-            "slug": "handle-elasticsearch-data"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "Query Elastic",
-            "slug": "query-elastic"
-          },
-          "depth": 2
-        }
-      ]
+      "depth": 1
     }, {
       "type": "file",
       "data": {
@@ -406,14 +76,13 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "foldPrefix": "^",
           "name": "CoffeeScript"
         },
-        "sourcePath": "/mnt/c/Users/Amirali/Projects/odme/src/main.coffee",
+        "sourcePath": "/Users/arash/Projects/r-and-d/npms/odme/src/main.coffee",
         "projectPath": "src/main.coffee",
         "targetPath": "main",
         "pageTitle": "main",
         "title": "main"
       },
-      "depth": 1,
-      "outline": []
+      "depth": 1
     }
   ];
 
